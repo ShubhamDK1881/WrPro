@@ -26,21 +26,12 @@ Parameters:
   AvailabilityZone2:
     Type: String
     Description: The second availability zone
-  InstanceType:
-    Type: String
-    Description: The EC2 instance type
-  KeyName:
-    Type: String
-    Description: The name of the EC2 key pair
-  SSHLocation:
-    Type: String
-    Description: The IP address range that can be used to SSH to the EC2 instances
 
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub 'https://s3.amazonaws.com/my-bucket/vpc-stack.yaml'
+      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-11/vpc-stack.yaml'
       Parameters:
         VpcCIDR: !Ref VpcCIDR
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
@@ -50,6 +41,4 @@ Resources:
         AvailabilityZone1: !Ref AvailabilityZone1
         AvailabilityZone2: !Ref AvailabilityZone2
         EnvironmentName: !Ref EnvironmentName
-        InstanceType: !Ref InstanceType
-        KeyName: !Ref KeyName
-        SSHLocation: !Ref SSHLocation
+

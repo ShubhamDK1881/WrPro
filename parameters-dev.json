@@ -7,8 +7,6 @@
     "EnvironmentName": "dev",
     "AvailabilityZone1": "eu-north-1a",
     "AvailabilityZone2": "eu-north-1b",
-    "InstanceType": "t3.micro",
-    "KeyName": "my-key-pair",
     "SSHLocation": "0.0.0.0/0"
   }
   

@@ -38,9 +38,10 @@ jobs:
 
       - name: Upload nested stack templates to S3
         run: |
-          aws s3 cp ./WrPro/root-stack.yaml s3://my-demo-s3-bucket-test-project-11/root-stack.yaml
-          aws s3 cp ./WrPro/vpc-stack.yaml s3://my-demo-s3-bucket-test-project-11/vpc-stack.yaml
-          aws s3 cp ./WrPro/parameters-dev.json s3://my-demo-s3-bucket-test-project-11/parameters-dev.json
+          aws s3 cp ./WrPro/WrPro/root-stack.yaml s3://my-demo-s3-bucket-test-project-11/root-stack.yaml
+          aws s3 cp ./WrPro/WrPro/vpc-stack.yaml s3://my-demo-s3-bucket-test-project-11/vpc-stack.yaml
+          aws s3 cp ./WrPro/WrPro/parameters-dev.json s3://my-demo-s3-bucket-test-project-11/parameters-dev.json
+          aws s3 cp ./WrPro/WrPro/s3.yaml s3://my-demo-s3-bucket-test-project-11/s3.yaml
       
       - name: Check status of Previously Deployed stacks
         id: check_main_stack
@@ -70,7 +71,7 @@ jobs:
             --stack-name ${{ matrix.environment }}-vpc \
             --template-file root-stack.yaml \
             --parameter-overrides $(cat parameters-${{ matrix.environment }}.json | jq -r 'to_entries | map("\(.key)=\(.value)") | .[]') \
-              S3BucketName=my-demo-s3-bucket-test-project-18 \
+              S3BucketName=my-demo-s3-bucket-test-project-11 \
               AccessControl=Private \
               VersioningStatus=Enabled \
             --capabilities CAPABILITY_NAMED_IAM
