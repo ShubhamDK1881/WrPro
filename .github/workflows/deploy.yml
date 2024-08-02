@@ -34,7 +34,7 @@ jobs:
       - name: Create S3 Bucket if Not Exists
         if: env.bucket_exists == 'false'
         run: |
-          aws s3api create-bucket --bucket my-demo-s3-bucket-test-project-11 --region eu-north-1
+          aws s3api create-bucket --bucket my-demo-s3-bucket-test-project-11 --region --region $AWS_REGION
 
       - name: Upload nested stack templates to S3
         run: |
