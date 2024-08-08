@@ -7,7 +7,6 @@ on:
       - dev
       - prod
       - main
-      - qa
 
 jobs:
   test:
