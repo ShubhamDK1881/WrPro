@@ -1,0 +1,142 @@
+name: Deploy AWS Resources using GitHub Actions
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - prod
+      - main
+      - qa
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set environment variables
+        id: set-env
+        run: |
+          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          if [[ $BRANCH == 'master' || $BRANCH == 'main' ]]; then
+            echo "DEPLOYMENT_ENV=prod" >> $GITHUB_ENV
+            echo "S3_BUCKET=${{ secrets.PROD_S3_BUCKET }}" >> $GITHUB_ENV
+            echo "STACK_NAME=main-stack-prod" >> $GITHUB_ENV
+          elif [[ $BRANCH == 'qa' ]]; then
+            echo "DEPLOYMENT_ENV=qa" >> $GITHUB_ENV
+            echo "S3_BUCKET=${{ secrets.QA_S3_BUCKET }}" >> $GITHUB_ENV
+            echo "STACK_NAME=main-stack-qa" >> $GITHUB_ENV
+          else
+            echo "DEPLOYMENT_ENV=dev" >> $GITHUB_ENV
+            echo "S3_BUCKET=${{ secrets.DEV_S3_BUCKET }}" >> $GITHUB_ENV
+            echo "STACK_NAME=main-stack-dev" >> $GITHUB_ENV
+          fi
+
+      - name: Print environment variables for debugging
+        run: |
+          echo "BRANCH=${BRANCH}"
+          echo "DEPLOYMENT_ENV=${DEPLOYMENT_ENV}"
+          echo "S3_BUCKET=${S3_BUCKET}"
+          echo "STACK_NAME=${STACK_NAME}"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+
+      - name: Prepare parameter overrides
+        id: prepare-params
+        run: |
+          PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
+          echo "::set-output name=params::$PARAMS"
+
+      - name: Deploy Main CloudFormation Stack
+        id: deploy_stack
+        run: |
+          aws cloudformation deploy \
+            --template-file ./Resources/main.yaml \
+            --stack-name ${{ env.STACK_NAME }} \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides ${{ steps.prepare-params.outputs.params }}
+
+      - name: Fetch CloudFormation Stack Events on Failure
+        if: failure()
+        run: |
+          echo "Fetching CloudFormation stack events..."
+          aws cloudformation describe-stack-events --stack-name ${{ env.STACK_NAME }} | jq -r '.StackEvents[] | "\(.Timestamp) \(.ResourceStatus) \(.ResourceType) \(.LogicalResourceId) \(.ResourceStatusReason)"'
+
+      - name: Get CloudFormation Outputs
+        if: success()
+        id: get_outputs
+        run: |
+          outputs=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs" --output json)
+          echo "outputs=$(echo $outputs | jq -c .)" >> $GITHUB_ENV
+
+      - name: Parse and Set Outputs
+        if: success()
+        run: |
+          VPC_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
+          INSTANCE_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="InstanceId") | .OutputValue')
+          BUCKET_NAME=$(echo $outputs | jq -r '.[] | select(.OutputKey=="BucketName") | .OutputValue')
+          echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+          echo "BUCKET_NAME=$BUCKET_NAME" >> $GITHUB_ENV
+
+      - name: Save VPC ID as artifact
+        if: success()
+        run: echo ${{ env.VPC_ID }} > vpc-id.txt
+
+      - name: Upload VPC ID artifact
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: vpc-id
+          path: vpc-id.txt
+
+      - name: Save S3 Bucket Name as artifact
+        if: success()
+        run: echo ${{ env.BUCKET_NAME }} > s3-bucket-name.txt
+
+      - name: Upload S3 Bucket Name artifact
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: s3-bucket-name
+          path: s3-bucket-name.txt
