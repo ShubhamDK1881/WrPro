@@ -80,27 +80,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Check status of Previously Deployed stacks
-        id: check_main_stack
-        run: |
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].StackStatus" --output text || echo "STACK_NOT_FOUND")
-          echo "main Stack Status: $STACK_STATUS"
-          echo "::set-output name=stack_status::$STACK_STATUS"
-
-      - name: Delete main stack if main stack is in DELETE_IN_PROGRESS state
-        if: steps.check_main_stack.outputs.stack_status == 'DELETE_IN_PROGRESS'
-        run: |
-          echo "Deleting main stack..."
-          aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
-          echo "Delete Complete..."
-
-      - name: Delete main stack if main stack is in ROLLBACK_COMPLETE state
-        if: steps.check_main_stack.outputs.stack_status == 'ROLLBACK_COMPLETE' || 'CREATE_COMPLETE'
-        run: |
-          echo "Deleting main stack..."
-          aws cloudformation delete-stack --stack-name ${{ env.STACK_NAME }}
-          aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
-          echo "Delete Complete..."
+      
 
       - name: Prepare parameter overrides
         id: prepare-params
