@@ -32,6 +32,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm install
 
@@ -64,12 +65,14 @@ jobs:
             echo "S3_BUCKET=${{ secrets.DEV_S3_BUCKET }}" >> $GITHUB_ENV
             echo "STACK_NAME=main-stack-dev" >> $GITHUB_ENV
           fi
+
       - name: Print environment variables for debugging
         run: |
           echo "BRANCH=${BRANCH}"
           echo "DEPLOYMENT_ENV=${DEPLOYMENT_ENV}"
           echo "S3_BUCKET=${S3_BUCKET}"
           echo "STACK_NAME=${STACK_NAME}"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -83,12 +86,14 @@ jobs:
           STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].StackStatus" --output text || echo "STACK_NOT_FOUND")
           echo "main Stack Status: $STACK_STATUS"
           echo "::set-output name=stack_status::$STACK_STATUS"
+
       - name: Delete main stack if main stack is in DELETE_IN_PROGRESS state
         if: steps.check_main_stack.outputs.stack_status == 'DELETE_IN_PROGRESS'
         run: |
           echo "Deleting main stack..."
           aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
           echo "Delete Complete..."
+
       - name: Delete main stack if main stack is in ROLLBACK_COMPLETE state
         if: steps.check_main_stack.outputs.stack_status == 'ROLLBACK_COMPLETE' || 'CREATE_COMPLETE'
         run: |
@@ -96,11 +101,13 @@ jobs:
           aws cloudformation delete-stack --stack-name ${{ env.STACK_NAME }}
           aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
           echo "Delete Complete..."
+
       - name: Prepare parameter overrides
         id: prepare-params
         run: |
           PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
           echo "::set-output name=params::$PARAMS"
+
       - name: Deploy Main CloudFormation Stack
         id: deploy_stack
         run: |
@@ -109,17 +116,20 @@ jobs:
             --stack-name ${{ env.STACK_NAME }} \
             --capabilities CAPABILITY_NAMED_IAM \
             --parameter-overrides ${{ steps.prepare-params.outputs.params }}
+
       - name: Fetch CloudFormation Stack Events on Failure
         if: failure()
         run: |
           echo "Fetching CloudFormation stack events..."
           aws cloudformation describe-stack-events --stack-name ${{ env.STACK_NAME }} | jq -r '.StackEvents[] | "\(.Timestamp) \(.ResourceStatus) \(.ResourceType) \(.LogicalResourceId) \(.ResourceStatusReason)"'
+
       - name: Get CloudFormation Outputs
         if: success()
         id: get_outputs
         run: |
           outputs=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs" --output json)
           echo "outputs=$(echo $outputs | jq -c .)" >> $GITHUB_ENV
+
       - name: Parse and Set Outputs
         if: success()
         run: |
@@ -129,6 +139,7 @@ jobs:
           echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
           echo "BUCKET_NAME=$BUCKET_NAME" >> $GITHUB_ENV
+
       - name: Save VPC ID as artifact
         if: success()
         run: echo ${{ env.VPC_ID }} > vpc-id.txt
