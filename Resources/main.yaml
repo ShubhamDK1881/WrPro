@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Main stack template
+
+Parameters:
+  VPCName:
+    Type: String
+    Description: The name of the VPC
+
+  S3BucketName:
+    Type: String
+    Description: The name of the S3 bucket to be created
+
+  Environment:
+    Type: String
+    Description: The environment name
+    Default: prod
+    AllowedValues: [dev, prod]
+
+  AccessControl:
+    Type: String
+    Description: The access control for the S3 bucket
+    Default: Private
+    AllowedValues: [Private, PublicRead, PublicReadWrite, AuthenticatedRead]
+
+  VersioningStatus:
+    Type: String
+    Description: The versioning status for the S3 bucket
+    Default: Enabled
+    AllowedValues: [Enabled, Suspended]
+
+Resources:
+  NestedIAMRoleStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/iam-role.yaml'
+
+  NestedVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/vpc.yaml'
+      Parameters:
+        VPCName: !Ref VPCName
+
+  NestedS3Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/s3.yaml'
+      Parameters:
+        S3BucketName: !Ref S3BucketName
+
+Outputs:
+  VPCId:
+    Description: "The ID of the VPC"
+    Value: !GetAtt NestedVPCStack.Outputs.VPCId
+    Export:
+      Name: !Sub "${AWS::StackName}-VPCId"
+
+  S3BucketName:
+    Description: "The name of the S3 bucket"
+    Value: !GetAtt NestedS3Stack.Outputs.S3BucketName
+    Export:
+      Name: !Sub "${AWS::StackName}-S3BucketName"
