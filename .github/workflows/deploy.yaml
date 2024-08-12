@@ -102,6 +102,15 @@ jobs:
           aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
           echo "Delete Complete..."
 
+      - name: Upload nested stack templates to S3
+        run: |
+            aws s3 cp ./Resources/vpc.yaml s3://my-demo-s3-bucket-test-project-18/vpc.yaml
+            aws s3 cp ./Resources/s3.yaml s3://my-demo-s3-bucket-test-project-18/s3.yaml
+            aws s3 cp ./Resources/ec2.yaml s3://my-demo-s3-bucket-test-project-18/ec2.yaml
+            aws s3 cp ./Resources/iam-role.yaml s3://my-demo-s3-bucket-test-project-18/iam-role.yaml
+            aws s3 cp ./Resources/parameters-dev.json s3://my-demo-s3-bucket-test-project-18/parameters-dev.json
+            aws s3 cp ./Resources/parameters-prod.json s3://my-demo-s3-bucket-test-project-18/parameters-prod.json
+
       - name: Prepare parameter overrides
         id: prepare-params
         run: |
