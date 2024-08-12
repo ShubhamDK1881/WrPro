@@ -78,7 +78,7 @@ jobs:
     - name: Prepare parameter overrides
       id: prepare-params
       run: |
-            PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
+            PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' parameters-${{ env.DEPLOYMENT_ENV }}.json)
             echo "::set-output name=params::$PARAMS"
 
     - name: Install cfn-lint
@@ -93,7 +93,7 @@ jobs:
       with:
         name: ${{ env.STACK_NAME }}
         template: vpc.yaml
-        parameter-overrides: ./parameters.${{ env.DEPLOYMENT_ENV }}.json
+        parameter-overrides: ./parameters-${{ env.DEPLOYMENT_ENV }}.json
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
 
