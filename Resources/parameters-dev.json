@@ -1,0 +1,7 @@
+{
+  "VPCName": "DevVPC",
+  "S3BucketName": "dev-s3-bucket-demo-project-18",
+  "Environment": "dev",
+  "AccessControl": "Private",
+  "VersioningStatus": "Enabled"
+}

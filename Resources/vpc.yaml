@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  VPCName:
+    Type: String
+    Description: The name of the VPC
+
+  VPCCIDR:
+    Default: 10.0.0.0/16
+    Description: Please enter the IP range (CIDR notation) for the VPC
+    Type: String
+
+  PublicSubnetCIDR:
+    Default: 10.0.0.0/24
+    Description: Please enter the IP range (CIDR notation) for the public subnet
+    Type: String
+
+  PrivateSubnetCIDR:
+    Default: 10.0.1.0/24
+    Description: Please enter the IP range (CIDR notation) for the private subnet
+    Type: String
+
+Resources:
+  VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      Tags:
+        - Key: "Name"
+          Value: !Ref VPCName
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: !Ref PublicSubnetCIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: Public Subnet
+      VpcId: !Ref VPC
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref PrivateSubnetCIDR
+      Tags:
+        - Key: Name
+          Value: Private Subnet
+      VpcId: !Ref VPC
+
+Outputs:
+  VPCId:
+    Description: "The ID of the VPC"
+    Value: !Ref VPC
+    Export:
+      Name: "VPCId"
+
+  PrivateSubnetID:
+    Description: "The ID of the Private Subnet"
+    Value: !Ref PrivateSubnet
+    Export:
+      Name: "PrivateSubnetID"
+
+  PublicSubnetID:
+    Description: "The ID of the Public Subnet"
+    Value: !Ref PublicSubnet
+    Export:
+      Name: "PublicSubnetID"
