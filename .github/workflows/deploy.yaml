@@ -91,7 +91,7 @@ jobs:
     - name: Print the CloudFormation Linter Version & run Linter
       run: |
               cfn-lint --version
-              cfn-lint --ignore-checks W3011,W3002 -t ./vpc.yml
+              cfn-lint --ignore-checks W3011,W3002 -t ./vpc.yaml
   
 
     - name: Deploy to AWS Cloudformation
