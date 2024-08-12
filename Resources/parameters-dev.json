@@ -3,5 +3,18 @@
   "S3BucketName": "dev-s3-bucket-demo-project-18",
   "Environment": "dev",
   "AccessControl": "Private",
-  "VersioningStatus": "Enabled"
+  "VersioningStatus": "Enabled",
+    "VpcCIDR": "10.0.0.0/16",
+    "PublicSubnet1CIDR": "10.0.1.0/24",
+    "PublicSubnet2CIDR": "10.0.2.0/24",
+    "PrivateSubnet1CIDR": "10.0.3.0/24",
+    "PrivateSubnet2CIDR": "10.0.4.0/24",
+    "AvailabilityZone1": "us-east-1a",
+    "AvailabilityZone2": "us-east-1b",
+    "EnvironmentName": "dev",
+    "InstanceType": "t2.micro",
+    "KeyName": "my-key-pair",
+    "SSHLocation": "0.0.0.0/0",
+    "Name": "worley-dev"
+
 }
