@@ -98,3 +98,33 @@ jobs:
         parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
+
+    - name: Fetch CloudFormation Stack Events on Failure
+      if: failure()
+      run: |
+        echo "Fetching CloudFormation stack events..."
+        aws cloudformation describe-stack-events --stack-name ${{ env.STACK_NAME }} | jq -r '.StackEvents[] | "\(.Timestamp) \(.ResourceStatus) \(.ResourceType) \(.LogicalResourceId) \(.ResourceStatusReason)"'
+
+    - name: Get CloudFormation Outputs
+      if: success()
+      id: get_outputs
+      run: |
+        outputs=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs" --output json)
+        echo "outputs=$(echo $outputs | jq -c .)" >> $GITHUB_ENV
+
+    - name: Parse and Set Outputs
+      if: success()
+      run: |
+        VPC_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
+        echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
+        
+    - name: Save VPC ID as artifact
+      if: success()
+      run: echo ${{ env.VPC_ID }} > vpc-id.txt
+
+    - name: Upload VPC ID artifact
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: vpc-id
+        path: vpc-id.txt
