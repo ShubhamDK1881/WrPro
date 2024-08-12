@@ -115,12 +115,12 @@ jobs:
     - name: Parse and Set Outputs
       if: success()
       run: |
-        VPC_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
-        echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
-        
+        VpcId=$(echo $outputs | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
+        echo "VpcId=$VpcId" >> $GITHUB_ENV
+
     - name: Save VPC ID as artifact
       if: success()
-      run: echo ${{ env.VPC_ID }} > vpc-id.txt
+      run: echo ${{ env.VpcId }} > vpc-id.txt
 
     - name: Upload VPC ID artifact
       if: success()
