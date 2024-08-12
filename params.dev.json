@@ -7,8 +7,5 @@
   "PrivateSubnet2CIDR": "10.0.4.0/24",
   "AvailabilityZone1": "us-east-1a",
   "AvailabilityZone2": "us-east-1b",
-  "InstanceType": "t2.micro",
-  "KeyName": "my-key-pair",
-  "SSHLocation": "0.0.0.0/0",
   "Name": "worley-dev"
 }

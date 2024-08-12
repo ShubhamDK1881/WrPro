@@ -18,12 +18,6 @@ Parameters:
     Type: String
   EnvironmentName:
     Type: String
-  InstanceType:
-    Type: String
-  KeyName:
-    Type: String
-  SSHLocation:
-    Type: String
   Name:
     Type: String
     Default: worley
