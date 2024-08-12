@@ -75,18 +75,28 @@ jobs:
           echo "ECR Reposetory : ${{ env.ECR_URI }}"
           echo "Deployment Stack Name : ${{ env.STACK_NAME }}"
 
+
+ 
+    - name: Install cfn-lint
+      run: pip install cfn-lint
+ 
+    - name: Print the CloudFormation Linter Version & Run Linter
+      run: |
+        cfn-lint --version
+        cfn-lint --ignore-checks W3011,W3002 -t ./vpc.yml
+ 
+
     - name: Prepare Parameter Overrides
       id: prepare_params
       run: |
         params=$(cat ./parameters-${{ env.DEPLOYMENT_ENV }}.json | jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")')
         echo "params=$params" >> $GITHUB_ENV
         
-    - name: Deploy to AWS CloudFormation
-      id: deploy_stack
-      run: |
-              aws cloudformation deploy \
-                --template-file vpc.yaml \
-                --stack-name ${{ env.STACK_NAME }} \
-                --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
-                --parameter-overrides ${{ env.params }} \
-                --no-fail-on-empty-changeset
+    - name: Deploy to AWS Cloudformation
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: ${{ env.STACK_NAME }}
+        template:  ./vpc.yml
+        parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
+        capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
+        no-fail-on-empty-changeset: "1"
