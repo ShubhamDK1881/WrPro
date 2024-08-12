@@ -146,7 +146,7 @@ jobs:
 
       - name: Upload VPC ID artifact
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vpc-id
           path: vpc-id.txt
@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload S3 Bucket Name artifact
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: s3-bucket-name
           path: s3-bucket-name.txt
