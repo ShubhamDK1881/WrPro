@@ -19,8 +19,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-   
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -28,14 +26,18 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }} 
 
-    - name: Install AWS cli
-      id: install-aws-cli
+    - name: Install AWS CLI
       uses: unfor19/install-aws-cli-action@master
-    - run: |
-        aws --version
+      with:
+        version: "2"
+
+    - name: Install cfn-lint
+      run: |
+        pip install cfn-lint
+
     - name: Set env BRANCH
       run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
- 
+
     - name: Set env DEPLOYMENT_ENV and DEPLOYMENT_ROLE_ARN and S3_BUCKET
       env:
         DEV_S3_BUCKET: ${{ secrets.DEV_S3_BUCKET }}
@@ -66,19 +68,16 @@ jobs:
           echo "S3 Bucket arn : ${{ env.S3_BUCKET }}"
           echo "Deployment Stack Name : ${{ env.STACK_NAME }}"
 
-    - name: Print the Cloud Formation Linter Version & run Linter.
+    - name: Print the CloudFormation Linter Version & run Linter.
       run: |
         cfn-lint --version
         cfn-lint --ignore-checks W3011,W3002 -t ./template.yml
 
-    - name: Deploy to AWS Cloudformation
+    - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: ${{ env.STACK_NAME }}
         template:  ./template.yml
         parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
-        capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
+        capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND,CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
-
-
-    
