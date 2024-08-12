@@ -81,19 +81,12 @@ jobs:
             PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' parameters-${{ env.DEPLOYMENT_ENV }}.json)
             echo "::set-output name=params::$PARAMS"
 
-    - name: Install cfn-lint
-      run: |  
-              pip install cfn-lint
-
-    - name: Debug - List files in the workspace
-      run: ls -R
-
-    - name: Deploy to AWS Cloudformation
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
-      with:
-        name: ${{ env.STACK_NAME }}
-        template: vpc.yaml
-        parameter-overrides: ./parameters-${{ env.DEPLOYMENT_ENV }}.json
-        capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
-        no-fail-on-empty-changeset: "1"
-
+    - name: Deploy to AWS CloudFormation
+      id: deploy_stack
+      run: |
+        aws cloudformation deploy \
+          --template-file vpc.yaml \
+          --stack-name ${{ env.STACK_NAME }} \
+          --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+          --parameter-overrides ${{ env.params }} \
+          --no-fail-on-empty-changeset
