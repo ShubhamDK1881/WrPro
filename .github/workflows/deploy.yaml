@@ -52,13 +52,13 @@ jobs:
           echo "DEPLOYMENT_ROLE_ARN=$PROD_DEPLOYMENT_ROLE" >> "$GITHUB_ENV"
           echo "S3_BUCKET=$PROD_S3_BUCKET" >> "$GITHUB_ENV"
           echo "ECR_URI=$PROD_ECR_URI" >> "$GITHUB_ENV"
-          echo "STACK_NAME=" >> "$GITHUB_ENV"
+          echo "STACK_NAME=prod-stack" >> "$GITHUB_ENV"
          elif [[ $BRANCH == 'qa' ]]; then
           echo "DEPLOYMENT_ENV=qa" >> "$GITHUB_ENV"
           echo "DEPLOYMENT_ROLE_ARN=$QA_DEPLOYMENT_ROLE" >> "$GITHUB_ENV"
           echo "S3_BUCKET=$QA_S3_BUCKET" >> "$GITHUB_ENV"
           echo "ECR_URI=$QA_ECR_URI" >> "$GITHUB_ENV"
-          echo "STACK_NAME=" >> "$GITHUB_ENV"
+          echo "STACK_NAME=qa-stack" >> "$GITHUB_ENV"
          else
           echo "DEPLOYMENT_ENV=dev" >> "$GITHUB_ENV"
           echo "DEPLOYMENT_ROLE_ARN=$DEV_DEPLOYMENT_ROLE" >> "$GITHUB_ENV"
@@ -79,7 +79,7 @@ jobs:
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: ${{ env.STACK_NAME }}
-        template:  ./vpc.yml
+        template:  ./Resources/vpc.yml
         parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
