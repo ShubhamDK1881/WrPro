@@ -158,9 +158,3 @@ Resources:
       SubnetId: !Ref PrivateSubnet2
       RouteTableId: !Ref PrivateRouteTable
 
-  Outputs:
-      PublicSubnetNameOutput:
-          Description: 'The name of the S3 bucket'
-          Value: !Ref PublicSubnet1
-          Export:
-            Name: MyPublicSubnet1
