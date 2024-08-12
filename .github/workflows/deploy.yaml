@@ -81,6 +81,10 @@ jobs:
             PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
             echo "::set-output name=params::$PARAMS"
 
+    - name: Install cfn-lint
+      run: |
+              pip install cfn-lint
+
     - name: Debug - List files in the workspace
       run: ls -R
       
