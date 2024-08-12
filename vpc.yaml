@@ -1,166 +1,152 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: VPC stack with public and private subnets, route tables, NAT gateway, and internet gateway
+name: Deploy AWS Resources using GitHub Actions
 
-Parameters:
-  VpcCIDR:
-    Type: String
-  PublicSubnet1CIDR:
-    Type: String
-  PublicSubnet2CIDR:
-    Type: String
-  PrivateSubnet1CIDR:
-    Type: String
-  PrivateSubnet2CIDR:
-    Type: String
-  AvailabilityZone1:
-    Type: String
-  AvailabilityZone2:
-    Type: String
-  EnvironmentName:
-    Type: String
-  InstanceType:
-    Type: String
-  KeyName:
-    Type: String
-  SSHLocation:
-    Type: String
-  Name:
-    Type: String
-    Default: worley
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - prod
+      - main
+      - qa
 
-Resources:
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !Ref VpcCIDR
-      Tags:
-        - Key: Name
-          Value: !Sub 'worley-vpc-${EnvironmentName}'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
 
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: !Sub 'worley-IG-${EnvironmentName}'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-  PublicSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !Ref PublicSubnet1CIDR
-      AvailabilityZone: !Ref AvailabilityZone1
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: !Sub '${Name}-public-subnet-1'
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        run: npm install
 
-  PublicSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !Ref PublicSubnet2CIDR
-      AvailabilityZone: !Ref AvailabilityZone2
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: !Sub '${Name}-public-subnet-2'
+      - name: Run unit tests
+        run: npm test
 
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !Ref PrivateSubnet1CIDR
-      AvailabilityZone: !Ref AvailabilityZone1
-      Tags:
-        - Key: Name
-          Value: !Sub '${Name}-private-subnet-1'
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
 
-  PrivateSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: !Ref PrivateSubnet2CIDR
-      AvailabilityZone: !Ref AvailabilityZone2
-      Tags:
-        - Key: Name
-          Value: !Sub '${Name}-private-subnet-2'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub '${Name}-public-route-table'
+      - name: Set environment variables
+        id: set-env
+        run: |
+          BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+          if [[ $BRANCH == 'master' || $BRANCH == 'main' ]]; then
+            echo "DEPLOYMENT_ENV=prod" >> $GITHUB_ENV
+            echo "S3_BUCKET=${{ secrets.PROD_S3_BUCKET }}" >> $GITHUB_ENV
+            echo "STACK_NAME=main-stack-prod" >> $GITHUB_ENV
+          elif [[ $BRANCH == 'qa' ]]; then
+            echo "DEPLOYMENT_ENV=qa" >> $GITHUB_ENV
+            echo "S3_BUCKET=${{ secrets.QA_S3_BUCKET }}" >> $GITHUB_ENV
+            echo "STACK_NAME=main-stack-qa" >> $GITHUB_ENV
+          else
+            echo "DEPLOYMENT_ENV=dev" >> $GITHUB_ENV
+            echo "S3_BUCKET=${{ secrets.DEV_S3_BUCKET }}" >> $GITHUB_ENV
+            echo "STACK_NAME=main-stack-dev" >> $GITHUB_ENV
+          fi
+      - name: Print environment variables for debugging
+        run: |
+          echo "BRANCH=${BRANCH}"
+          echo "DEPLOYMENT_ENV=${DEPLOYMENT_ENV}"
+          echo "S3_BUCKET=${S3_BUCKET}"
+          echo "STACK_NAME=${STACK_NAME}"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-  PublicRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref InternetGateway
+      - name: Check status of Previously Deployed stacks
+        id: check_main_stack
+        run: |
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].StackStatus" --output text || echo "STACK_NOT_FOUND")
+          echo "main Stack Status: $STACK_STATUS"
+          echo "::set-output name=stack_status::$STACK_STATUS"
+      - name: Delete main stack if main stack is in DELETE_IN_PROGRESS state
+        if: steps.check_main_stack.outputs.stack_status == 'DELETE_IN_PROGRESS'
+        run: |
+          echo "Deleting main stack..."
+          aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
+          echo "Delete Complete..."
+      - name: Delete main stack if main stack is in ROLLBACK_COMPLETE state
+        if: steps.check_main_stack.outputs.stack_status == 'ROLLBACK_COMPLETE' || 'CREATE_COMPLETE'
+        run: |
+          echo "Deleting main stack..."
+          aws cloudformation delete-stack --stack-name ${{ env.STACK_NAME }}
+          aws cloudformation wait stack-delete-complete --stack-name ${{ env.STACK_NAME }}
+          echo "Delete Complete..."
+      - name: Prepare parameter overrides
+        id: prepare-params
+        run: |
+          PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
+          echo "::set-output name=params::$PARAMS"
+      - name: Deploy Main CloudFormation Stack
+        id: deploy_stack
+        run: |
+          aws cloudformation deploy \
+            --template-file ./Resources/main.yaml \
+            --stack-name ${{ env.STACK_NAME }} \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --parameter-overrides ${{ steps.prepare-params.outputs.params }}
+      - name: Fetch CloudFormation Stack Events on Failure
+        if: failure()
+        run: |
+          echo "Fetching CloudFormation stack events..."
+          aws cloudformation describe-stack-events --stack-name ${{ env.STACK_NAME }} | jq -r '.StackEvents[] | "\(.Timestamp) \(.ResourceStatus) \(.ResourceType) \(.LogicalResourceId) \(.ResourceStatusReason)"'
+      - name: Get CloudFormation Outputs
+        if: success()
+        id: get_outputs
+        run: |
+          outputs=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs" --output json)
+          echo "outputs=$(echo $outputs | jq -c .)" >> $GITHUB_ENV
+      - name: Parse and Set Outputs
+        if: success()
+        run: |
+          VPC_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
+          INSTANCE_ID=$(echo $outputs | jq -r '.[] | select(.OutputKey=="InstanceId") | .OutputValue')
+          BUCKET_NAME=$(echo $outputs | jq -r '.[] | select(.OutputKey=="BucketName") | .OutputValue')
+          echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_ENV
+          echo "BUCKET_NAME=$BUCKET_NAME" >> $GITHUB_ENV
+      - name: Save VPC ID as artifact
+        if: success()
+        run: echo ${{ env.VPC_ID }} > vpc-id.txt
 
-  PublicSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      RouteTableId: !Ref PublicRouteTable
+      - name: Upload VPC ID artifact
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: vpc-id
+          path: vpc-id.txt
 
-  PublicSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet2
-      RouteTableId: !Ref PublicRouteTable
+      - name: Save S3 Bucket Name as artifact
+        if: success()
+        run: echo ${{ env.BUCKET_NAME }} > s3-bucket-name.txt
 
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub '${Name}-private-route-table'
-
-  NatGatewayEIP:
-    Type: AWS::EC2::EIP
-    DependsOn: AttachGateway
-    Properties:
-      Domain: vpc
-
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGatewayEIP.AllocationId
-      SubnetId: !Ref PublicSubnet1
-
-  PrivateRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      NatGatewayId: !Ref NatGateway
-
-  PrivateSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet1
-      RouteTableId: !Ref PrivateRouteTable
-
-  PrivateSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet2
-      RouteTableId: !Ref PrivateRouteTable
-
-  Outputs:
-      PublicSubnetNameOutput:
-          Description: 'The name of the S3 bucket'
-          Value: !Ref PublicSubnet1
-          Export:
-            Name: MyPublicSubnet1
+      - name: Upload S3 Bucket Name artifact
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: s3-bucket-name
+          path: s3-bucket-name.txt
