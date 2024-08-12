@@ -106,7 +106,7 @@ jobs:
         run: |
             aws s3 cp ./Resources/vpc.yaml s3://my-demo-s3-bucket-test-project-18/vpc.yaml
             aws s3 cp ./Resources/s3.yaml s3://my-demo-s3-bucket-test-project-18/s3.yaml
-            aws s3 cp ./Resources/ec2.yaml s3://my-demo-s3-bucket-test-project-18/ec2.yaml
+            aws s3 cp ./Resources/main.yaml s3://my-demo-s3-bucket-test-project-18/main.yaml
             aws s3 cp ./Resources/iam-role.yaml s3://my-demo-s3-bucket-test-project-18/iam-role.yaml
             aws s3 cp ./Resources/parameters-dev.json s3://my-demo-s3-bucket-test-project-18/parameters-dev.json
             aws s3 cp ./Resources/parameters-prod.json s3://my-demo-s3-bucket-test-project-18/parameters-prod.json
