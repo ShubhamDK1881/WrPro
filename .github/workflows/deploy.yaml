@@ -80,13 +80,21 @@ jobs:
       run: |
             PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
             echo "::set-output name=params::$PARAMS"
+
+    - name: Debug - List files in the workspace
+      run: ls -R
+      
+    - name: Print the CloudFormation Linter Version & run Linter
+      run: |
+              cfn-lint --version
+              cfn-lint --ignore-checks W3011,W3002 -t ./template.yml
   
 
     - name: Deploy to AWS Cloudformation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: ${{ env.STACK_NAME }}
-        template: D:\WrPro\WrPro\vpc.yaml
+        template: vpc.yaml
         parameter-overrides: ${{ steps.prepare-params.outputs.params }}
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
