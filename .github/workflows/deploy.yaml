@@ -75,18 +75,27 @@ jobs:
           echo "ECR Reposetory : ${{ env.ECR_URI }}"
           echo "Deployment Stack Name : ${{ env.STACK_NAME }}"
 
-    - name: Prepare parameter overrides
-      id: prepare-params
+    - name: Prepare Parameter Overrides
+      id: prepare_params
       run: |
-            PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' parameters-${{ env.DEPLOYMENT_ENV }}.json)
-            echo "::set-output name=params::$PARAMS"
-
+        params=$(cat ./parameters-${{ env.DEPLOYMENT_ENV }}.json | jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")')
+        echo "params=$params" >> $GITHUB_ENV
+        
     - name: Deploy to AWS CloudFormation
       id: deploy_stack
       run: |
-        aws cloudformation deploy \
-          --template-file vpc.yaml \
-          --stack-name ${{ env.STACK_NAME }} \
-          --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
-          --parameter-overrides ${{ env.params }} \
-          --no-fail-on-empty-changeset
+           if [ -n "${{ env.params }}" ]; then
+              aws cloudformation deploy \
+                --template-file vpc.yaml \
+                --stack-name ${{ env.STACK_NAME }} \
+                --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+                --parameter-overrides ${{ env.params }} \
+                --no-fail-on-empty-changeset
+            else
+              aws cloudformation deploy \
+                --template-file vpc.yaml \
+                --stack-name ${{ env.STACK_NAME }} \
+                --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
+                --no-fail-on-empty-changeset
+            fi
+        
