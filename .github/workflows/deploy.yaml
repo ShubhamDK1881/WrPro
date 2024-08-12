@@ -75,11 +75,18 @@ jobs:
           echo "ECR Reposetory : ${{ env.ECR_URI }}"
           echo "Deployment Stack Name : ${{ env.STACK_NAME }}"
 
+    - name: Prepare parameter overrides
+      id: prepare-params
+      run: |
+            PARAMS=$(jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")' Resources/parameters-${{ env.DEPLOYMENT_ENV }}.json)
+            echo "::set-output name=params::$PARAMS"
+  
+
     - name: Deploy to AWS Cloudformation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: ${{ env.STACK_NAME }}
         template:  ./Resources/vpc.yaml
-        parameter-overrides: file://${{ github.workspace }}/parameters-dev.json
+        parameter-overrides: ${{ steps.prepare-params.outputs.params }}
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
