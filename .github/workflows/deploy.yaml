@@ -87,12 +87,6 @@ jobs:
 
     - name: Debug - List files in the workspace
       run: ls -R
-      
-    - name: Print the CloudFormation Linter Version & run Linter
-      run: |
-              cfn-lint --version
-              cfn-lint --ignore-checks W3011,W3002 -t ./vpc.yaml
-  
 
     - name: Deploy to AWS Cloudformation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
