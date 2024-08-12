@@ -1,7 +1,0 @@
-{
-  "VPCName": "ProdVPC",
-  "S3BucketName": "dev-s3-bucket-demo-project-81",
-  "Environment": "prod",
-  "AccessControl": "Private",
-  "VersioningStatus": "Enabled"
-}
