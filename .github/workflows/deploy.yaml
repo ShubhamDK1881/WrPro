@@ -71,13 +71,13 @@ jobs:
     - name: Print the CloudFormation Linter Version & run Linter.
       run: |
         cfn-lint --version
-        cfn-lint --ignore-checks W3011,W3002 -t ./vpc.yml
+        cfn-lint --ignore-checks W3011,W3002 -t ./Resources/main.yml
 
     - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: ${{ env.STACK_NAME }}
-        template:  ./template.yml
+        template:  ./Resources/main.yml
         parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND,CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
