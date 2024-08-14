@@ -20,7 +20,7 @@ Parameters:
     Type: String
   Name:
     Type: String
-    Default: worley
+    Default: worley-nc
 
 Resources:
   VPC:

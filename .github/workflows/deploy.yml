@@ -75,7 +75,7 @@ jobs:
 
     - name: Upload nested stack templates to S3
       run: |
-        aws s3 cp ./vpc.yaml s3://my-demo-s3-bucket-test-project-11/vpc.yaml
+        aws s3 cp ./vpc.yml s3://my-demo-s3-bucket-test-project-11/vpc.yml
 
     - name: Install cfn-lint
       run: pip install cfn-lint
