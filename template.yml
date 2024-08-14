@@ -2,15 +2,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Main stack template
 
 Parameters:
-  VpcCIDR:
-    Type: String
+
   VPCName:
     Type: String
-  EnvironmentName:
-    Type: String
-  Name:
-    Type: String
-    Default: worley-nc
 
 Resources:
 
