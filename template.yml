@@ -2,7 +2,22 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Main stack template
 
 Parameters:
-
+  VpcCIDR:
+    Type: String
+  PublicSubnet1CIDR:
+    Type: String
+  PublicSubnet2CIDR:
+    Type: String
+  PrivateSubnet1CIDR:
+    Type: String
+  PrivateSubnet2CIDR:
+    Type: String
+  AvailabilityZone1:
+    Type: String
+  AvailabilityZone2:
+    Type: String
+  EnvironmentName:
+    Type: String
   VpcName:
     Type: String
 
@@ -14,3 +29,10 @@ Resources:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-11/vpc.yml'
       Parameters:
         VpcName: !Ref VpcName
+        VpcCIDR: !Ref VpcCIDR
+        PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
+        PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDR
+        PrivateSubnet2CIDR: !Ref PrivateSubnet2CIDR
+        AvailabilityZone1: !Ref AvailabilityZone1
+        AvailabilityZone2: !Ref AvailabilityZone2
+        EnvironmentName: !Ref EnvironmentName
