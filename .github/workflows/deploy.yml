@@ -79,7 +79,7 @@ jobs:
         aws s3 cp ./template.yml s3://my-demo-s3-bucket-test-project-18/template.yml
 
     - name: Check status of Previously Deployed stacks
-      id: check_main_stack
+      id: check_dev-stack
       run: |
         STACK_STATUS=$(aws cloudformation describe-stacks --stack-name main-stack --query "Stacks[0].StackStatus" --output text || echo "STACK_NOT_FOUND")
         echo "main Stack Status: $STACK_STATUS"
