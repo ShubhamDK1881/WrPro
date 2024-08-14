@@ -121,6 +121,6 @@ jobs:
       with:
         name: ${{ env.STACK_NAME }}
         template:  ./resources/template.yml
-        parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
+        parameter-overrides: file://${{ github.workspace }}/resources/params.${{ env.DEPLOYMENT_ENV }}.json
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
