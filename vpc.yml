@@ -28,14 +28,14 @@ Resources:
       CidrBlock: !Ref VpcCIDR
       Tags:
         - Key: Name
-          Value: !Ref VpcName
+          Value: !Sub '$(Name)-Vpc-${EnvironmentName}'
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub 'worley-IG-${EnvironmentName}'
+          Value: !Sub '$(Name)-IG-${EnvironmentName}'
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment

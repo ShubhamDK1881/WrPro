@@ -18,7 +18,7 @@ Parameters:
     Type: String
   EnvironmentName:
     Type: String
-  VpcName:
+  Name:
     Type: String
 
 Resources:
@@ -28,7 +28,7 @@ Resources:
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-11/vpc.yml'
       Parameters:
-        VpcName: !Ref VpcName
+        VpcName: !Sub '$(Name)-Vpc-${EnvironmentName}'
         VpcCIDR: !Ref VpcCIDR
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
