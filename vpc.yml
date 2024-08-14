@@ -21,7 +21,7 @@ Parameters:
   Name:
     Type: String
     Default: worley-nc
-  VPCName:
+  VpcName:
     Type: String
 
 Resources:
@@ -31,7 +31,7 @@ Resources:
       CidrBlock: !Ref VpcCIDR
       Tags:
         - Key: Name
-          Value: !Sub 'worley-nc-vpc-${EnvironmentName}'
+          Value: !Ref VpcName
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
