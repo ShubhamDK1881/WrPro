@@ -37,6 +37,11 @@ Resources:
             Action:
             - 'logs:CreateLogStream'
             - 'logs:PutLogEvents'
+            - 'logs:DescribeLogGroups'
+            - 'logs:DescribeLogStreams'
+            - 's3:PutObject'
+            - 's3:GetObject'
+            - 's3:GetBucketLocation'
             Resource: !GetAtt 'FlowLogsLogGroup.Arn'
 
   FlowLogsLogGroup:
