@@ -180,25 +180,25 @@ Outputs:
     Description: 'The Public Subnet 1 ID'
     Value: !Ref PublicSubnet1
     Export:
-      Name: !Sub '${Name}-public-subnet-1-id'
+      Name: !Sub '${Name}-public-subnetid'
 
   PublicSubnet2Id:
     Description: 'The Public Subnet 2 ID'
     Value: !Ref PublicSubnet2
     Export:
-      Name: !Sub '${Name}-public-subnet-2-id'
+      Name: !Sub '${Name}-public-subnet-id'
 
   PrivateSubnet1Id:
     Description: 'The Private Subnet 1 ID'
     Value: !Ref PrivateSubnet1
     Export:
-      Name: !Sub '${Name}-private-subnet-1-id'
+      Name: !Sub '${Name}-private-subnet-id'
 
   PrivateSubnet2Id:
     Description: 'The Private Subnet 2 ID'
     Value: !Ref PrivateSubnet2
     Export:
-      Name: !Sub '${Name}-private-subnet-2-id'
+      Name: !Sub '${Name}-private-subnetid'
 
   PublicRouteTableId:
     Description: 'The Public Route Table ID'
