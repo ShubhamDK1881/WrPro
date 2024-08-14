@@ -156,8 +156,8 @@ Outputs:
     Description: 'The VPC ID'
     Value: !Ref VPC
     Export:
-      Name: !Sub '${Name}-vpc-id'
-
+    Name: !Sub "${AWS::StackName}-VPCId"
+    
   VpcName:
     Description: 'The VPC Name'
     Value: !Ref VPC
