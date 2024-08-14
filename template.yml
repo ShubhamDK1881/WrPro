@@ -3,14 +3,14 @@ Description: Main stack template
 
 Parameters:
 
-  VPCName:
+  VpcName:
     Type: String
 
 Resources:
 
   NestedVPCStack:
-    Type: AWS::CloudFormation::Stack
+    Type: AWS::Serverless::Application
     Properties:
-      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-11/vpc.yaml'
+      Location: vpc.yml'
       Parameters:
-        VPCName: !Ref VPCName
+        VpcName: !Ref VpcName
