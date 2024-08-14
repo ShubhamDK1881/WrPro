@@ -18,7 +18,7 @@ Parameters:
     Type: String
   EnvironmentName:
     Type: String
-  VpcName:
+  Name:
     Type: String
 
 Resources:
@@ -157,6 +157,12 @@ Outputs:
     Value: !Ref VPC
     Export:
       Name: !Sub '${Name}-vpc-id'
+
+  VpcName:
+    Description: 'The VPC Name'
+    Value: !Ref VPC
+    Export:
+      Name: !Sub '$(Name)-Vpc-${EnvironmentName}'
 
   InternetGatewayId:
     Description: 'The Internet Gateway ID'
