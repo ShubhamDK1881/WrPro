@@ -18,6 +18,8 @@ Parameters:
     Type: String
   EnvironmentName:
     Type: String
+  Name:
+    Type: String
 
 
 Resources:
@@ -27,9 +29,7 @@ Resources:
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-11/vpc.yml'
       Parameters:
-        VpcName: !ImportValue 
-          Fn::Sub: "$(Name)-Vpc-${EnvironmentName}"
-        VpcCIDR: !Ref VpcCIDR
+        Name: !Ref Name
         PublicSubnet1CIDR: !Ref PublicSubnet1CIDR
         PublicSubnet2CIDR: !Ref PublicSubnet2CIDR
         PrivateSubnet1CIDR: !Ref PrivateSubnet1CIDR
