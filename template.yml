@@ -12,4 +12,5 @@ Resources:
     Properties:
       TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/vpc.yaml'
       Parameters:
-        VpcName: !Ref VpcName
+        VpcName: !ImportValue 
+          Fn::Sub: "${VPCName}-VpcID"

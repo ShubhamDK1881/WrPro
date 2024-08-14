@@ -29,7 +29,7 @@ Resources:
       CidrBlock: !Ref VpcCIDR
       Tags:
         - Key: Name
-          Value: !Sub 'worley-vpc-${EnvironmentName}'
+          Value: !Sub 'worley-nc-vpc-${EnvironmentName}'
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
