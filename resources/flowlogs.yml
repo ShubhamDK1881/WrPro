@@ -17,7 +17,6 @@ Parameters:
       - ALL
 
   S3BucketName:
-    Description: 'The S3 bucket where VPC Flow Logs will be stored'
     Type: String
 
 Resources:
@@ -36,7 +35,6 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              # Permissions for CloudWatch Logs
               - Effect: Allow
                 Action:
                   - 'logs:CreateLogStream'
@@ -45,15 +43,14 @@ Resources:
                   - 'logs:DescribeLogStreams'
                 Resource: !GetAtt 'FlowLogsLogGroup.Arn'
               
-              # Permissions for S3 bucket
               - Effect: Allow
                 Action:
                   - 's3:PutObject'
                   - 's3:GetObject'
                   - 's3:GetBucketLocation'
                 Resource: 
-                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
-                  - !Sub 'arn:aws:s3:::${S3BucketName}'
+                  - !Sub '${{ secrets.S3_BUCKET_ARN }}/*'
+                  - !Sub '${{ secrets.S3_BUCKET_ARN }}'
 
   FlowLogsLogGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -70,7 +67,7 @@ Resources:
       ResourceType: 'VPC'
       TrafficType: !Ref TrafficType
       LogDestinationType: s3
-      LogDestination: !Sub 'arn:aws:s3:::${S3BucketName}/vpc-flow-logs/'
+      LogDestination: !Sub 'arn:aws:s3:::${S3BucketName}}/vpc-flow-logs/'
 
 Outputs:
   VPCFlowLogId:
