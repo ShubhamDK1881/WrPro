@@ -4,6 +4,23 @@ Description: Main stack template
 Parameters:
   VpcCIDR:
     Type: String
+  PublicSubnet1CIDR:
+    Type: String
+  PublicSubnet2CIDR:
+    Type: String
+  PrivateSubnet1CIDR:
+    Type: String
+  PrivateSubnet2CIDR:
+    Type: String
+  AvailabilityZone1:
+    Type: String
+  AvailabilityZone2:
+    Type: String
+  EnvironmentName:
+    Type: String
+  Name:
+    Type: String
+    Default: worley-nc
 
 Resources:
 
@@ -12,5 +29,4 @@ Resources:
     Properties:
       TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/vpc.yaml'
       Parameters:
-        VpcName: !ImportValue 
-          Fn::Sub: "${VPCName}-VpcID"
+        VpcCIDR: !Ref VpcCIDR
