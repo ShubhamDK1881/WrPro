@@ -24,25 +24,25 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1 
+        aws-region: ${{ secrets.AWS_REGION }} 
 
     - name: Install AWS cli
       id: install-aws-cli
       uses: unfor19/install-aws-cli-action@master
     - run: |
         aws --version
+
     - name: Set env BRANCH
       run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
  
     - name: Set env DEPLOYMENT_ENV and DEPLOYMENT_ROLE_ARN and S3_BUCKET
       env:
-        DEV_DEPLOYMENT_ROLE: ${{ secrets.DEV_DEPLOYMENT_ROLE }}
-        QA_DEPLOYMENT_ROLE: ${{ secrets.QA_DEPLOYMENT_ROLE  }}
-        PROD_DEPLOYMENT_ROLE: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
-        UAT_DEPLOYMENT_ROLE: ${{ secrets.UAT_DEPLOYMENT_ROLE }}
+ #       DEV_DEPLOYMENT_ROLE: ${{ secrets.DEV_DEPLOYMENT_ROLE }}
+ #       QA_DEPLOYMENT_ROLE: ${{ secrets.QA_DEPLOYMENT_ROLE  }}
+ #       PROD_DEPLOYMENT_ROLE: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
+ #       UAT_DEPLOYMENT_ROLE: ${{ secrets.UAT_DEPLOYMENT_ROLE }}
         DEV_S3_BUCKET: ${{ secrets.DEV_S3_BUCKET }}
         QA_S3_BUCKET: ${{ secrets.QA_S3_BUCKET }}
-        UAT_S3_BUCKET: ${{ secrets.UAT_S3_BUCKET }}
         PROD_S3_BUCKET: ${{ secrets.PROD_S3_BUCKET }}
       run: |
          if [[ $BRANCH == 'master' || $BRANCH == 'main' ]]; then
@@ -59,29 +59,31 @@ jobs:
           echo "STACK_NAME=qa-stack" >> "$GITHUB_ENV"
          else
           echo "DEPLOYMENT_ENV=dev" >> "$GITHUB_ENV"
-          echo "DEPLOYMENT_ROLE_ARN=$DEV_DEPLOYMENT_ROLE" >> "$GITHUB_ENV"
           echo "S3_BUCKET=$DEV_S3_BUCKET" >> "$GITHUB_ENV"
           echo "ECR_URI=$DEV_ECR_URI" >> "$GITHUB_ENV"
           echo "STACK_NAME=dev-stack" >> "$GITHUB_ENV"
+          echo "DEPLOYMENT_ROLE_ARN=$DEV_DEPLOYMENT_ROLE" >> "$GITHUB_ENV"
          fi
 
     - name: Print all the variable parameters
       run: |
           echo "Role ARN: ${{ env.DEPLOYMENT_ROLE_ARN }}"
-          echo "Deployment Environment: ${{ env.DEPLOYMENT_ENV }}"
           echo "S3 Bucket arn : ${{ env.S3_BUCKET }}"
           echo "ECR Reposetory : ${{ env.ECR_URI }}"
           echo "Deployment Stack Name : ${{ env.STACK_NAME }}"
+    #      echo "Deployment Environment: ${{ env.DEPLOYMENT_ENV }}"
 
+    - name: Upload nested stack templates to S3
+      run: |
+        aws s3 cp ./vpc.yaml s3://my-demo-s3-bucket-test-project-11/vpc.yaml
 
- 
     - name: Install cfn-lint
       run: pip install cfn-lint
  
     - name: Print the CloudFormation Linter Version & Run Linter
       run: |
         cfn-lint --version
-        cfn-lint --ignore-checks W3011,W3002 -t ./vpc.yml
+        cfn-lint --ignore-checks W3011,W3002 -t ./template.yml
  
 
     - name: Prepare Parameter Overrides
@@ -94,37 +96,7 @@ jobs:
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: ${{ env.STACK_NAME }}
-        template:  ./vpc.yml
+        template:  ./template.yml
         parameter-overrides: file://${{ github.workspace }}/params.${{ env.DEPLOYMENT_ENV }}.json
         capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND, CAPABILITY_NAMED_IAM
         no-fail-on-empty-changeset: "1"
-
-    - name: Fetch CloudFormation Stack Events on Failure
-      if: failure()
-      run: |
-        echo "Fetching CloudFormation stack events..."
-        aws cloudformation describe-stack-events --stack-name ${{ env.STACK_NAME }} | jq -r '.StackEvents[] | "\(.Timestamp) \(.ResourceStatus) \(.ResourceType) \(.LogicalResourceId) \(.ResourceStatusReason)"'
-
-    - name: Get CloudFormation Outputs
-      if: success()
-      id: get_outputs
-      run: |
-        outputs=$(aws cloudformation describe-stacks --stack-name ${{ env.STACK_NAME }} --query "Stacks[0].Outputs" --output json)
-        echo "outputs=$(echo $outputs | jq -c .)" >> $GITHUB_ENV
-
-    - name: Parse and Set Outputs
-      if: success()
-      run: |
-        VpcId=$(echo $outputs | jq -r '.[] | select(.OutputKey=="VPCId") | .OutputValue')
-        echo "VpcId=$VpcId" >> $GITHUB_ENV
-
-    - name: Save VPC ID as artifact
-      if: success()
-      run: echo ${{ env.VpcId }} > vpc-id.txt
-
-    - name: Upload VPC ID artifact
-      if: success()
-      uses: actions/upload-artifact@v3
-      with:
-        name: vpc-id
-        path: vpc-id.txt

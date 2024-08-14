@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Main stack template
+
+Parameters:
+  VpcCIDR:
+    Type: String
+
+Resources:
+
+  NestedVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/vpc.yaml'
+      Parameters:
+        VpcName: !Ref VpcName
