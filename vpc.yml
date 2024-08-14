@@ -21,6 +21,8 @@ Parameters:
   Name:
     Type: String
     Default: worley-nc
+  VPCName:
+    Type: String
 
 Resources:
   VPC:

@@ -4,17 +4,7 @@ Description: Main stack template
 Parameters:
   VpcCIDR:
     Type: String
-  PublicSubnet1CIDR:
-    Type: String
-  PublicSubnet2CIDR:
-    Type: String
-  PrivateSubnet1CIDR:
-    Type: String
-  PrivateSubnet2CIDR:
-    Type: String
-  AvailabilityZone1:
-    Type: String
-  AvailabilityZone2:
+  VPCName:
     Type: String
   EnvironmentName:
     Type: String
@@ -27,6 +17,6 @@ Resources:
   NestedVPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/vpc.yaml'
+      TemplateURL: !Sub 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-11/vpc.yaml'
       Parameters:
-        VpcCIDR: !Ref VpcCIDR
+        VPCName: !Ref VPCName
