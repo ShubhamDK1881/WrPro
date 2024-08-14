@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
-
   RetentionInDays:
     Description: 'Specifies the number of days you want to retain log events.'
     Type: Number
     Default: 14
     AllowedValues: [1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653]
+
   TrafficType:
     Description: 'The type of traffic to log.'
     Type: String
@@ -16,33 +16,44 @@ Parameters:
       - REJECT
       - ALL
 
+  S3BucketName:
+    Description: 'The S3 bucket where VPC Flow Logs will be stored'
+    Type: String
+
 Resources:
-      
   FlowLogsRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-        - Effect: Allow
-          Principal:
-            Service: 'vpc-flow-logs.amazonaws.com'
-          Action: 'sts:AssumeRole'
-      Policies:
-      - PolicyName: 'flowlogs-policy'
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
           - Effect: Allow
-            Action:
-            - 'logs:CreateLogStream'
-            - 'logs:PutLogEvents'
-            - 'logs:DescribeLogGroups'
-            - 'logs:DescribeLogStreams'
-            - 's3:PutObject'
-            - 's3:GetObject'
-            - 's3:GetBucketLocation'
-            Resource: !GetAtt 'FlowLogsLogGroup.Arn'
+            Principal:
+              Service: 'vpc-flow-logs.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'flowlogs-policy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Permissions for CloudWatch Logs
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogGroups'
+                  - 'logs:DescribeLogStreams'
+                Resource: !GetAtt 'FlowLogsLogGroup.Arn'
+              
+              # Permissions for S3 bucket
+              - Effect: Allow
+                Action:
+                  - 's3:PutObject'
+                  - 's3:GetObject'
+                  - 's3:GetBucketLocation'
+                Resource: 
+                  - !Sub 'arn:aws:s3:::${S3BucketName}/*'
+                  - !Sub 'arn:aws:s3:::${S3BucketName}'
 
   FlowLogsLogGroup:
     Type: 'AWS::Logs::LogGroup'
@@ -58,9 +69,10 @@ Resources:
         Fn::Sub: "${VpcName}-VpcId"
       ResourceType: 'VPC'
       TrafficType: !Ref TrafficType
+      LogDestinationType: s3
+      LogDestination: !Sub 'arn:aws:s3:::${S3BucketName}/vpc-flow-logs/'
 
 Outputs:
-
   VPCFlowLogId:
     Description: 'The ID of the VPC Flow Log'
     Value: !Ref VPCFlowLog
