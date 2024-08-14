@@ -7,8 +7,5 @@
   {"ParameterKey":"PrivateSubnet2CIDR", "ParameterValue": "10.0.4.0/24"},
   {"ParameterKey":"AvailabilityZone1", "ParameterValue": "us-east-1a"},
   {"ParameterKey":"AvailabilityZone2", "ParameterValue":"us-east-1b"},
-  {"ParameterKey":"Name", "ParameterValue": "worley-nc-dev"},
-  {"ParameterKey":"InstanceType", "ParameterValue": "t2.micro"},
-  {"ParameterKey":"KeyName", "ParameterValue": "my-key-pair"},
   {"ParameterKey":"VpcName", "ParameterValue": "worley-nc"}
 ]
