@@ -68,7 +68,7 @@ Resources:
       ResourceType: 'VPC'
       TrafficType: !Ref TrafficType
       LogDestinationType: s3
-      LogDestination: !Sub '${{ secrets.S3_BUCKET_ARN }}'/vpc-flow-logs/'
+      LogDestination: !Sub 'arn:aws:s3:::${S3BucketName}/vpc-flow-logs/'
 
 Outputs:
   VPCFlowLogId:
