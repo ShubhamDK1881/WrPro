@@ -205,4 +205,3 @@ Outputs:
     Value: !Ref PrivateRouteTable
     Export:
       Name: !Sub '${Name}-private-route-table-id'
-
