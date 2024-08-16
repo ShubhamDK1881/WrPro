@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Parameters:
+
   RetentionInDays:
     Description: 'Specifies the number of days you want to retain log events.'
     Type: Number
@@ -67,7 +68,7 @@ Resources:
       ResourceType: 'VPC'
       TrafficType: !Ref TrafficType
       LogDestinationType: s3
-      LogDestination: !Sub 'arn:aws:s3:::${S3BucketName}}/vpc-flow-logs/'
+      LogDestination: !Sub '${{ secrets.S3_BUCKET_ARN }}'/vpc-flow-logs/'
 
 Outputs:
   VPCFlowLogId:
