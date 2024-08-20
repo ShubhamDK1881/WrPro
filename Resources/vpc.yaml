@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: VPC stack with public and private subnets, route tables, NAT gateway, and internet gateway
 
-
 Parameters:
   VpcCIDR:
     Type: String
