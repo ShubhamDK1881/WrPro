@@ -11,12 +11,8 @@
   {"ParameterKey": "PublicRouteTable", "ParameterValue": "worley-nerve-center-public-route-table"},
   {"ParameterKey": "PrivateRouteTable", "ParameterValue": "worley-nerve-center-Private-route-table"},
   {"ParameterKey": "InternetGateway", "ParameterValue": "worley-nerve-center-IG-dev"},
-  {"ParameterKey": "DBUsername", "ParameterValue": "admin"},
   {"ParameterKey": "AvailabilityZone1", "ParameterValue": "us-east-1a"},
   {"ParameterKey": "AvailabilityZone2", "ParameterValue": "us-east-1b"},
-  {"ParameterKey": "DBPassword", "ParameterValue": "worley-nerve-center-IG-dev"},
-  {"ParameterKey": "InternetGateway", "ParameterValue": "YourSecurePassword"},
-  {"ParameterKey": "DBInstanceType", "ParameterValue": "t2.micro"},
   {"ParameterKey": "vpcname", "ParameterValue": "worley-nerve-center-VPC"}
 ]
 
