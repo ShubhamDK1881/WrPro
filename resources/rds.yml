@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Amazon Aurora PostgreSQL Database
 
 Parameters:
-  vpcname:
+  VpcName:
     Type: String
   InstanceType:
     Type: String
@@ -24,16 +24,16 @@ Resources:
       DBSubnetGroupDescription: "Subnet group for Aurora DB cluster"
       SubnetIds: 
         - !ImportValue 
-          Fn::Sub: "${vpcname}-private-subnet-1-id"
+          Fn::Sub: "${VpcName}-private-subnet-1-id"
         - !ImportValue 
-          Fn::Sub: "${vpcname}-private-subnet-2-id"
+          Fn::Sub: "${VpcName}-private-subnet-2-id"
 
   DBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Allow inbound traffic to Aurora
       VpcId: !ImportValue 
-        Fn::Sub: "${vpcname}-vpc-id"
+        Fn::Sub: "${VpcName}-vpc-id"
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432 
