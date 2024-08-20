@@ -6,10 +6,6 @@ Parameters:
     Type: String
   InstanceType:
     Type: String
-  PrivateSubnet1Id:
-    Type: String
-  PrivateSubnet2Id:
-    Type: String
   DBUsername:
     Type: String
     NoEcho: true
