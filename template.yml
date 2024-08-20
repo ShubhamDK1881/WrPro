@@ -4,10 +4,6 @@ Description: Main stack template
 Parameters:
   VpcCIDR:
     Type: String
-  Name:
-    Type: String
-  VpcCIDR:
-    Type: String
   vpcname:
     Type: String
   PublicSubnet1CIDR:
