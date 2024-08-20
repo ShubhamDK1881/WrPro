@@ -43,7 +43,7 @@ Resources:
   DBCluster:
     Type: 'AWS::RDS::DBCluster'
     Properties:
-      Engine: aurora-PostgreSQL
+      Engine: aurora-postgresql
       EngineVersion: 'PostgreSQL 16.3-R2'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
       MasterUsername: !Ref DBUsername
