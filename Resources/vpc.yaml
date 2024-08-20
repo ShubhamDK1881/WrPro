@@ -16,6 +16,7 @@ Parameters:
   AvailabilityZone1:
     Type: String
   AvailabilityZone2:
+    Type: String
   PublicSubnet1:
     Type: String
   PublicSubnet2:
@@ -52,18 +53,6 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGatewayEIP.AllocationId
-      SubnetId: !Ref PublicSubnet1
-
-  NatGatewayEIP:
-    Type: AWS::EC2::EIP
-    DependsOn: AttachGateway
-    Properties:
-      Domain: vpc
 
   PublicSubnet1:
     Type: AWS::EC2::Subnet
