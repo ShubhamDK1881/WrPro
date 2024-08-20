@@ -29,7 +29,7 @@ Parameters:
     Type: String
   PrivateRouteTable:
     Type: String
-  InternetGateway:
+  InternetGatewayIG:
     Type: String
 
 Resources:
@@ -46,7 +46,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Ref InternetGateway
+          Value: !Ref InternetGatewayIG
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
