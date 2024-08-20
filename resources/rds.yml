@@ -70,8 +70,8 @@ Resources:
 Outputs:
   DBClusterEndpoint:
     Description: The endpoint of the Aurora DB cluster
-    Value: !GetAtt worley-nerve-center-DBCluster.Endpoint.Address
+    Value: !GetAtt DBCluster.Endpoint.Address
 
   DBClusterReadEndpoint:
     Description: The read-only endpoint of the Aurora DB cluster
-    Value: !GetAtt worley-nerve-center-DBCluster.ReadEndpoint.Address
+    Value: !GetAtt DBCluster.ReadEndpoint.Address
