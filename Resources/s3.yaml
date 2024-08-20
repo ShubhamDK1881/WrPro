@@ -1,39 +1,81 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Description: Amazon Aurora PostgreSQL Database
 
 Parameters:
-  S3BucketName:
+  vpcname:
     Type: String
-    Description: "The name of the S3 bucket."
-    
-  AccessControl:
+  InstanceType:
     Type: String
-    Description: "The access control settings for the S3 bucket."
-    Default: "Private"
-    AllowedValues:
-      - Private
-      - PublicRead
-      - PublicReadWrite
-      - AuthenticatedRead
-  VersioningStatus:
+  PrivateSubnet1Id:
     Type: String
-    Description: "The versioning status for the S3 bucket."
-    Default: "Enabled"
-    AllowedValues:
-      - Enabled
-      - Suspended
-      
+  PrivateSubnet2Id:
+    Type: String
+  DBUsername:
+    Type: String
+    NoEcho: true
+  DBPassword:
+    Type: String
+    NoEcho: true
+
 Resources:
-  S3Bucket:
-    Type: 'AWS::S3::Bucket'
+  DBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties: 
+      DBSubnetGroupDescription: "Subnet group for Aurora DB cluster"
+      SubnetIds: 
+        - !ImportValue 
+          Fn::Sub: "${vpcname}-private-subnet-1-id"
+        - !ImportValue 
+          Fn::Sub: "${vpcname}-private-subnet-2-id"
+
+  DBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      BucketName: !Ref S3BucketName
-      AccessControl: !Ref AccessControl
-      VersioningConfiguration:
-        Status: !Ref VersioningStatus
+      GroupDescription: Allow inbound traffic to Aurora
+      VpcId: !ImportValue 
+        Fn::Sub: "${vpcname}-vpc-id"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432 
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+
+  DBCluster:
+    Type: 'AWS::RDS::DBCluster'
+    Properties:
+      Engine: aurora-PostgreSQL
+      EngineVersion: 'PostgreSQL 16.3-R2'
+      DBClusterIdentifier: worley-nerve-center-AuroraCluster
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      DBSubnetGroupName: !Ref worley-nerve-center-DBSubnetGroup
+      VpcSecurityGroupIds:
+        - !Ref worley-nerve-center-DBSecurityGroup
+      BackupRetentionPeriod: 7
+      PreferredBackupWindow: "04:00-05:00"
+      PreferredMaintenanceWindow: "mon:05:00-mon:06:00"
+      StorageEncrypted: true
+      DeletionPolicy: Snapshot
+      DatabaseName: worley-nerve-center-Database
+
+  DBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceIdentifier: worley-nerve-center-AuroraInstance
+      DBClusterIdentifier: !Ref worley-nerve-center-DBCluster
+      DBInstanceClass: !Ref InstanceType
+      Engine: aurora-postgresql
+      PubliclyAccessible: false
 
 Outputs:
-  S3BucketName:
-    Description: "The name of the S3 bucket."
-    Value: !Ref S3BucketName
-    Export:
-      Name: !Sub "${AWS::StackName}-S3BucketName"
+  DBClusterEndpoint:
+    Description: The endpoint of the Aurora DB cluster
+    Value: !GetAtt worley-nerve-center-DBCluster.Endpoint.Address
+
+  DBClusterReadEndpoint:
+    Description: The read-only endpoint of the Aurora DB cluster
+    Value: !GetAtt worley-nerve-center-DBCluster.ReadEndpoint.Address
