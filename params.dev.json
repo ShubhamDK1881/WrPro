@@ -10,7 +10,7 @@
   {"ParameterKey": "PrivateSubnet2", "ParameterValue": "worley-nerve-center-private-subnet-2"},
   {"ParameterKey": "PublicRouteTable", "ParameterValue": "worley-nerve-center-public-route-table"},
   {"ParameterKey": "PrivateRouteTable", "ParameterValue": "worley-nerve-center-Private-route-table"},
-  {"ParameterKey": "InternetGateway", "ParameterValue": "worley-nerve-center-IG-dev"},
+  {"ParameterKey": "InternetGatewayIG", "ParameterValue": "worley-nerve-center-IG-dev"},
   {"ParameterKey": "AvailabilityZone1", "ParameterValue": "us-east-1a"},
   {"ParameterKey": "AvailabilityZone2", "ParameterValue": "us-east-1b"},
   {"ParameterKey": "vpcname", "ParameterValue": "worley-nerve-center-VPC"}
