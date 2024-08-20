@@ -48,9 +48,9 @@ Resources:
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
-      DBSubnetGroupName: !Ref worley-nerve-center-DBSubnetGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
       VpcSecurityGroupIds:
-        - !Ref worley-nerve-center-DBSecurityGroup
+        - !Ref DBSecurityGroup
       BackupRetentionPeriod: 7
       PreferredBackupWindow: "04:00-05:00"
       PreferredMaintenanceWindow: "mon:05:00-mon:06:00"
@@ -62,7 +62,7 @@ Resources:
     Type: 'AWS::RDS::DBInstance'
     Properties:
       DBInstanceIdentifier: worley-nerve-center-AuroraInstance
-      DBClusterIdentifier: !Ref worley-nerve-center-DBCluster
+      DBClusterIdentifier: !Ref DBCluster
       DBInstanceClass: !Ref InstanceType
       Engine: aurora-postgresql
       PubliclyAccessible: false
