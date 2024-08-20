@@ -53,6 +53,17 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
+  InternetGatewayId:
+    Description: 'The Internet Gateway ID'
+    Value: !Ref InternetGateway
+    Export:
+      Name: !Sub '${Name}-ig-id'
+
+  NatGatewayId:
+    Description: 'The NAT Gateway ID'
+    Value: !Ref NatGateway
+    Export:
+      Name: !Sub '${Name}-nat-gateway-id'
 
   PublicSubnet1:
     Type: AWS::EC2::Subnet
