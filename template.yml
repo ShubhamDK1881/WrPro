@@ -30,6 +30,8 @@ Parameters:
     Type: String
   PrivateRouteTable:
     Type: String
+  InternetGatewayIG:
+    Type: String
 
 Resources:
 
@@ -52,3 +54,4 @@ Resources:
         PrivateSubnet2: !Ref PrivateSubnet2
         PublicRouteTable: !Ref PublicRouteTable
         PrivateRouteTable: !Ref PrivateRouteTable
+        InternetGatewayIG: !Ref InternetGatewayIG
