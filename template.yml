@@ -52,7 +52,5 @@ Resources:
       Parameters:
         VPCName: !Ref VpcName
         InstanceType: !Ref DBInstanceType
-        PrivateSubnet1Id: !Ref PrivateSubnet1
-        PrivateSubnet2Id: !Ref PrivateSubnet2
         DBUsername: !Ref DBUsername
         DBPassword: !Ref DBPassword
