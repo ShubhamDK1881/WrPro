@@ -6,10 +6,6 @@ Parameters:
     Type: String
   InstanceType:
     Type: String
-  PrivateSubnet1Id:
-    Type: String
-  PrivateSubnet2Id:
-    Type: String
   DBUsername:
     Type: String
     NoEcho: true
@@ -24,11 +20,11 @@ Resources:
       DBSubnetGroupDescription: "Subnet group for Aurora DB cluster"
       SubnetIds: 
         - !ImportValue 
-          Fn::Sub: "${VpcName}-private-subnet-1-id"
+          Fn::Sub: "${VpcName}-PrivateSubnet1Id"
         - !ImportValue 
-          Fn::Sub: "${VpcName}-private-subnet-2-id"
+          Fn::Sub: "${VpcName}-PrivateSubnet2Id"
 
-  DBSecurityGroup:
+  DBSecurityGroup:  
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Allow inbound traffic to Aurora
