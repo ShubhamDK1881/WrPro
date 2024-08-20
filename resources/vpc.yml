@@ -46,7 +46,7 @@ Resources:
   NatGateway:
     Type: AWS::EC2::NatGateway
     Properties:
-      # Your NatGateway properties here
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
       SubnetId: !Ref PublicSubnet1
 
   PublicSubnet1:
