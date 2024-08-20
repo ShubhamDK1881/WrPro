@@ -4,10 +4,6 @@ Description: Main stack template
 Parameters:
   VpcCIDR:
     Type: String
-  Name:
-    Type: String
-  VpcCIDR:
-    Type: String
   vpcname:
     Type: String
   PublicSubnet1CIDR:
@@ -36,17 +32,10 @@ Parameters:
     Type: String
   InternetGateway:
     Type: String
-  DBInstanceType:
-    Type: String
-  DBUsername:
-    Type: String
-  DBPassword:
-    Type: String
-    NoEcho: true
 
 Resources:
 
-   NestedVPCStack:
+  NestedVPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/vpc.yaml'
@@ -66,25 +55,3 @@ Resources:
         PublicRouteTable: !Ref PublicRouteTable
         PrivateRouteTable: !Ref PrivateRouteTable
         InternetGateway: !Ref InternetGateway
-
-    NestedRDSStack:
-      Type: AWS::CloudFormation::Stack
-      Properties:
-        TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/s3.yaml
-        Parameters:
-          VPCName: !Ref vpcname
-          InstanceType: !Ref DBInstanceType
-          PrivateSubnet1Id: !Ref PrivateSubnet1
-          PrivateSubnet2Id: !Ref PrivateSubnet2
-          DBUsername: !Ref DBUsername
-          DBPassword: !Ref DBPassword
-
-Outputs:
-  VPCId:
-    Value: !GetAtt NestedVPCStack.Outputs.VPCId
-
-  RDSInstanceEndpoint:
-    Value: !GetAtt NestedRDSStack.Outputs.RDSInstanceEndpoint
-
-  RDSInstancePort:
-    Value: !GetAtt NestedRDSStack.Outputs.RDSInstancePort
