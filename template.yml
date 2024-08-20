@@ -38,7 +38,7 @@ Resources:
   NestedVPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: 'https://s3.amazonaws.com/worley-nc-deployment/vpc.yml'
+      TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/vpc.yml'
       Parameters:
         VpcCIDR: !Ref VpcCIDR
         Name: !Ref vpcname
