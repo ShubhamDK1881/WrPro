@@ -8,5 +8,4 @@
   {"ParameterKey":"AvailabilityZone1", "ParameterValue": "us-east-1a"},
   {"ParameterKey":"AvailabilityZone2", "ParameterValue":"us-east-1b"},
   {"ParameterKey":"Name", "ParameterValue": "worley-nc"},
-  {"ParameterKey":"S3BucketName", "ParameterValue": "my-demo-s3-bucket-test-project-18"}
 ]
