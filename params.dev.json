@@ -13,5 +13,5 @@
   {"ParameterKey": "InternetGatewayIG", "ParameterValue": "worley-nerve-center-IG-dev"},
   {"ParameterKey": "AvailabilityZone1", "ParameterValue": "us-east-1a"},
   {"ParameterKey": "AvailabilityZone2", "ParameterValue": "us-east-1b"},
-  {"ParameterKey": "vpcname", "ParameterValue": "worley-nerve-center-VPC"}
+  {"ParameterKey": "VpcName", "ParameterValue": "worley-nerve-center-VPC"}
 ]
