@@ -48,7 +48,7 @@ Resources:
   NestedRDSStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: 'https://s3.amazonaws.com/worley-nc-deployment/rds.yml'
+      TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/rds.yml'
       Parameters:
         VPCName: !Ref VpcName
         InstanceType: !Ref DBInstanceType
