@@ -67,17 +67,17 @@ Resources:
         PrivateRouteTable: !Ref PrivateRouteTable
         InternetGateway: !Ref InternetGateway
 
-  NestedRDSStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/s3.yaml
-      Parameters:
-        VPCName: !Ref vpcname
-        InstanceType: !Ref DBInstanceType
-        PrivateSubnet1Id: !Ref PrivateSubnet1
-        PrivateSubnet2Id: !Ref PrivateSubnet2
-        DBUsername: !Ref DBUsername
-        DBPassword: !Ref DBPassword
+    NestedRDSStack:
+      Type: AWS::CloudFormation::Stack
+      Properties:
+        TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/s3.yaml
+        Parameters:
+          VPCName: !Ref vpcname
+          InstanceType: !Ref DBInstanceType
+          PrivateSubnet1Id: !Ref PrivateSubnet1
+          PrivateSubnet2Id: !Ref PrivateSubnet2
+          DBUsername: !Ref DBUsername
+          DBPassword: !Ref DBPassword
 
 Outputs:
   VPCId:
