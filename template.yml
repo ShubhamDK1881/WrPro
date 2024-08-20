@@ -70,7 +70,7 @@ Resources:
   NestedRDSStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/s3.yaml'
+      TemplateURL: 'https://s3.amazonaws.com/my-demo-s3-bucket-test-project-18/s3.yaml
       Parameters:
         VPCName: !Ref vpcname
         InstanceType: !Ref DBInstanceType
