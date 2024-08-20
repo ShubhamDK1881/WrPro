@@ -1,8 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: VPC stack with public and private subnets, route tables, NAT gateway, and internet gateway
-
 Parameters:
   VpcCIDR:
+    Type: String
+  vpcname:
     Type: String
   PublicSubnet1CIDR:
     Type: String
@@ -16,9 +17,19 @@ Parameters:
     Type: String
   AvailabilityZone2:
     Type: String
-  EnvironmentName:
+  PublicSubnet1:
     Type: String
-  Name:
+  PublicSubnet2:
+    Type: String
+  PrivateSubnet1:
+    Type: String
+  PrivateSubnet2:
+    Type: String
+  PublicRouteTable:
+    Type: String
+  PrivateRouteTable:
+    Type: String
+  InternetGateway:
     Type: String
 
 Resources:
@@ -28,14 +39,14 @@ Resources:
       CidrBlock: !Ref VpcCIDR
       Tags:
         - Key: Name
-          Value: !Sub '$(Name)-Vpc-${EnvironmentName}'
+          Value: !Ref vpcname
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub '$(Name)-IG-${EnvironmentName}'
+          Value: !Ref InternetGateway
 
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -52,7 +63,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub '${Name}-public-subnet-1'
+          Value: !Ref PublicSubnet1
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -63,7 +74,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub '${Name}-public-subnet-2'
+          Value: !Ref PublicSubnet2
 
   PrivateSubnet1:
     Type: AWS::EC2::Subnet
@@ -73,7 +84,7 @@ Resources:
       AvailabilityZone: !Ref AvailabilityZone1
       Tags:
         - Key: Name
-          Value: !Sub '${Name}-private-subnet-1'
+          Value: !Ref PrivateSubnet1
 
   PrivateSubnet2:
     Type: AWS::EC2::Subnet
@@ -83,7 +94,7 @@ Resources:
       AvailabilityZone: !Ref AvailabilityZone2
       Tags:
         - Key: Name
-          Value: !Sub '${Name}-private-subnet-2'
+          Value: !Ref PrivateSubnet2
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -91,7 +102,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub '${Name}-public-route-table'
+          Value: !Ref PublicRouteTable
 
   PublicRoute:
     Type: AWS::EC2::Route
@@ -118,19 +129,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub '${Name}-private-route-table'
-
-  NatGatewayEIP:
-    Type: AWS::EC2::EIP
-    DependsOn: AttachGateway
-    Properties:
-      Domain: vpc
-
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGatewayEIP.AllocationId
-      SubnetId: !Ref PublicSubnet1
+          Value: !Ref PrivateRouteTable
 
   PrivateRoute:
     Type: AWS::EC2::Route
@@ -186,13 +185,13 @@ Outputs:
     Description: 'The Private Subnet 1 ID'
     Value: !Ref PrivateSubnet1
     Export:
-      Name: !Sub '${Name}-private-subnet-id'
+      Name: !Sub '${Name}-private-subnet-1-id'
 
   PrivateSubnet2Id:
     Description: 'The Private Subnet 2 ID'
     Value: !Ref PrivateSubnet2
     Export:
-      Name: !Sub '${Name}-private-subnetid'
+      Name: !Sub '${Name}-private-subnet-2-id'
 
   PublicRouteTableId:
     Description: 'The Public Route Table ID'
@@ -205,3 +204,5 @@ Outputs:
     Value: !Ref PrivateRouteTable
     Export:
       Name: !Sub '${Name}-private-route-table-id'
+  
+  
