@@ -50,7 +50,7 @@ Resources:
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/worley-nc-deployment/rds.yml'
       Parameters:
-        VPCName: !Ref vpcname
+        VPCName: !Ref VpcName
         InstanceType: !Ref DBInstanceType
         PrivateSubnet1Id: !Ref PrivateSubnet1
         PrivateSubnet2Id: !Ref PrivateSubnet2
