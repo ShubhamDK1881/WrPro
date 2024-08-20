@@ -78,13 +78,3 @@ Resources:
           PrivateSubnet2Id: !Ref PrivateSubnet2
           DBUsername: !Ref DBUsername
           DBPassword: !Ref DBPassword
-
-Outputs:
-  VPCId:
-    Value: !GetAtt NestedVPCStack.Outputs.VPCId
-
-  RDSInstanceEndpoint:
-    Value: !GetAtt NestedRDSStack.Outputs.RDSInstanceEndpoint
-
-  RDSInstancePort:
-    Value: !GetAtt NestedRDSStack.Outputs.RDSInstancePort
