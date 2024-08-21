@@ -55,7 +55,11 @@ Resources:
       EngineVersion: '16.3'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
       MasterUsername: !Ref DBUsername
-      MasterUserPassword: '{{resolve:secretsmanager:worley-db-cred:SecretString:password}}'
+      MasterUserPassword: !Join
+          - ''
+          - - '{{resolve:secretsmanager:'
+            - !Ref WorlwyDBCredSecrets
+            - ':SecretString:password}}'
       DBSubnetGroupName: !Ref DBSubnetGroup
       VpcSecurityGroupIds:
         - !Ref DBSecurityGroup
