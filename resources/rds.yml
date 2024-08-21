@@ -42,7 +42,7 @@ Resources:
         Properties:
             Name: worley-db-cred
             Description: This secret has a API credientials details
-            SecretString: '{"AccountNumber" : "", "UserName": "", "Password": ""}'
+            SecretString: '{"UserName": "admin", "Password": "Demo_DB_Pass"}'
             Tags:
                 - Key: Secrets
                   Value: Worley
