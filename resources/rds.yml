@@ -14,14 +14,17 @@ Resources:
     Properties: 
       DBSubnetGroupDescription: "Subnet group for Aurora DB cluster"
       SubnetIds: 
-        - !ImportValue MyPrivateSubnet1
-        - !ImportValue MyPrivateSubnet2
+        - !ImportValue 
+          Fn::Sub: "${VpcName}-private-subnet-1-id"
+        - !ImportValue 
+          Fn::Sub: "${VpcName}-private-subnet-2-id"
 
   DBSecurityGroup:  
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Allow inbound traffic to Aurora
-      VpcId: !ImportValue MyvpcName
+      VpcId: !ImportValue 
+        Fn::Sub: "${VpcName}-Vpc-Id"
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432 
