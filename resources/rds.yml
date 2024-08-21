@@ -23,8 +23,9 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Allow inbound traffic to Aurora
-      VpcId: !ImportValue 
-        Fn::Sub: "${VpcName}-Vpc-Id"
+      VpcId:
+        -!ImportValue 
+         Fn::Sub: "${AWS::StackName}-VpcId"
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432 
