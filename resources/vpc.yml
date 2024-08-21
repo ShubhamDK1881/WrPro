@@ -156,7 +156,7 @@ Outputs:
     Description: 'The VPC ID'
     Value: !Ref VPC
     Export:
-      Name: MyVpcName
+      Name: !Sub "${AWS::StackName}-VpcId"
 
   InternetGatewayId:
     Description: 'The Internet Gateway ID'
