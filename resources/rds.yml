@@ -39,6 +39,16 @@ Resources:
           FromPort: 0
           ToPort: 65535
           CidrIp: 0.0.0.0/0
+  WorlwyDBCredSecrets:
+        Type: 'AWS::SecretsManager::Secret'
+        Properties:
+            Name: worley-db-cred
+            Description: This secret has a API credientials details
+            SecretString: '{"AccountNumber" : "", "UserName": "", "Password": ""}'
+            Tags:
+                -
+                    Key: Secrets
+                    Value: Worley
 
   DBCluster:
     Type: 'AWS::RDS::DBCluster'
@@ -47,7 +57,7 @@ Resources:
       EngineVersion: '16.3'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
       MasterUsername: !Ref DBUsername
-      MasterUserPassword: !Ref DBPassword
+      MasterUserPassword: '{{resolve:secretsmanager:worley-db-cred:SecretString:password}}'
       DBSubnetGroupName: !Ref DBSubnetGroup
       VpcSecurityGroupIds:
         - !Ref DBSecurityGroup
