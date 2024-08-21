@@ -43,6 +43,7 @@ Resources:
         InternetGatewayIG: !Ref InternetGatewayIG
 
   NestedRDSStack:
+    DependsOn: NestedVPCStack
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/rds.yml'
