@@ -24,8 +24,8 @@ Resources:
     Properties:
       GroupDescription: Allow inbound traffic to Aurora
       VpcId:
-        -!ImportValue 
-         Fn::Sub: "${AWS::StackName}-VpcId"
+        - !ImportValue 
+          Fn::Sub: "${AWS::StackName}-VpcId"
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432 
