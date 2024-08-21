@@ -57,8 +57,16 @@ Resources:
       Engine: aurora-PostgreSQL
       EngineVersion: 'PostgreSQL 16.3-R2'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
-      MasterUsername: !Join['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:username}}']]   
-      MasterUserPassword: !Join['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:password}}']]
+      MasterUsername: !Join
+          - ''
+          - - '{{resolve:secretsmanager:'
+            - !Ref DBSecret
+            - ':SecretString:username}}' 
+      MasterUserPassword: !Join
+          - ''
+          - - '{{resolve:secretsmanager:'
+            - !Ref DBSecret
+            - ':SecretString:password}}'
       DBSubnetGroupName: !Ref worley-nerve-center-DBSubnetGroup
       VpcSecurityGroupIds:
         - !Ref worley-nerve-center-DBSecurityGroup
