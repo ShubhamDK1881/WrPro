@@ -50,3 +50,5 @@ Resources:
       Parameters:
         InstanceType: !Ref DBInstanceType
         DBUsername: !Ref DBUsername
+        VpcName: !Ref VpcName
+
