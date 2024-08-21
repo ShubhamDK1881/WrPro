@@ -2,6 +2,8 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Amazon Aurora PostgreSQL Database
 
 Parameters:
+  VpcName:
+    Type: String
   InstanceType:
     Type: String
   DBUsername:
