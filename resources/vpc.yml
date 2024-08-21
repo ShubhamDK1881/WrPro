@@ -156,7 +156,7 @@ Outputs:
     Description: 'The VPC ID'
     Value: !Ref VPC
     Export:
-      Name: !Sub "${VpcName}-VpcId"
+      Name: MyVpcName
 
   InternetGatewayId:
     Description: 'The Internet Gateway ID'
