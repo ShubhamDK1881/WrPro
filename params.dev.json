@@ -8,7 +8,7 @@
   {"ParameterKey": "AvailabilityZone1", "ParameterValue": "us-east-1a"},
   {"ParameterKey": "AvailabilityZone2", "ParameterValue": "us-east-1b"},
   {"ParameterKey": "DBUsername", "ParameterValue": "admin"},
-  {"ParameterKey": "DBPassword", "ParameterValue": "worley-nerve-center-IG-dev"},
+  {"ParameterKey": "DBPassword", "ParameterValue": "Demo_DB_Pass"},
   {"ParameterKey": "DBInstanceType", "ParameterValue": "t2.micro"},
   {"ParameterKey": "VpcName", "ParameterValue": "worley-nerve-center-VPC"}
 ]
