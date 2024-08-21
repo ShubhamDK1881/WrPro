@@ -24,9 +24,6 @@ Parameters:
     Type: String
   DBUsername:
     Type: String
-  DBPassword:
-    Type: String
-    NoEcho: true
 
 Resources:
 
@@ -53,4 +50,3 @@ Resources:
         VPCName: !Ref VpcName
         InstanceType: !Ref DBInstanceType
         DBUsername: !Ref DBUsername
-        DBPassword: !Ref DBPassword
