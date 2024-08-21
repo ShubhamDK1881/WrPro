@@ -75,8 +75,7 @@ jobs:
 
     - name: Upload nested stack templates to S3
       run: |
-        aws s3 cp ./resources/vpc.yml s3://${{ secrets.S3_BUCKET }} --region us-east-1
-        aws s3 cp ./resources/rds.yml s3://${{ secrets.S3_BUCKET }} --region us-east-1
+        aws s3 cp ./resources/s3.yml s3://${{ secrets.S3_BUCKET }}
 
 
     - name: Prepare Parameter Overrides
