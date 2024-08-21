@@ -37,36 +37,36 @@ Resources:
           ToPort: 65535
           CidrIp: 0.0.0.0/0
           
-  WorlwyDBCredSecrets:
-        Type: 'AWS::SecretsManager::Secret'
-        Properties:
-            Name: worley-db-cred
-            Description: This secret has a API credientials details
-            SecretString: '{"UserName": "admin", "Password": "Demo_DB_Pass"}'
-            Tags:
-                - Key: Secrets
-                  Value: Worley
+ 
                   
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: RDSDBSecret
+      Description: "RDS credentials for MyRDSInstance"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\\'
+
   DBCluster:
     DependsOn: WorlwyDBCredSecrets
     Type: 'AWS::RDS::DBCluster'
     Properties:
-      Engine: aurora-postgresql
-      EngineVersion: '16.3'
+      Engine: aurora-PostgreSQL
+      EngineVersion: 'PostgreSQL 16.3-R2'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
-      MasterUsername: !Ref DBUsername
-      MasterUserPassword: !Join
-          - ''
-          - - '{{resolve:secretsmanager:'
-            - !Ref WorlwyDBCredSecrets
-            - ':SecretString:password}}'
-      DBSubnetGroupName: !Ref DBSubnetGroup
+      MasterUsername: !Join['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:username}}']]   
+      MasterUserPassword: !Join['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:password}}']]
+      DBSubnetGroupName: !Ref worley-nerve-center-DBSubnetGroup
       VpcSecurityGroupIds:
-        - !Ref DBSecurityGroup
+        - !Ref worley-nerve-center-DBSecurityGroup
       BackupRetentionPeriod: 7
       PreferredBackupWindow: "04:00-05:00"
       PreferredMaintenanceWindow: "mon:05:00-mon:06:00"
       StorageEncrypted: true
+      DeletionPolicy: Snapshot
       DatabaseName: worley-nerve-center-Database
 
   DBInstance:
