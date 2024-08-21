@@ -22,7 +22,6 @@ Parameters:
     Type: String
   DBInstanceType:
     Type: String
-  
 
 Resources:
 
