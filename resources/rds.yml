@@ -68,7 +68,6 @@ Resources:
       PreferredBackupWindow: "04:00-05:00"
       PreferredMaintenanceWindow: "mon:05:00-mon:06:00"
       StorageEncrypted: true
-      DeletionPolicy: Snapshot
       DatabaseName: worley-nerve-center-Database
 
   DBInstance:
