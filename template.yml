@@ -48,6 +48,5 @@ Resources:
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/rds.yml'
       Parameters:
-        VPCName: !Ref VpcName
         InstanceType: !Ref DBInstanceType
         DBUsername: !Ref DBUsername
