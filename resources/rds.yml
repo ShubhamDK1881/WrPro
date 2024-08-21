@@ -6,9 +6,6 @@ Parameters:
     Type: String
   InstanceType:
     Type: String
-  DBUsername:
-    Type: String
-    NoEcho: true
 
 Resources:
   DBSubnetGroup:
@@ -37,15 +34,17 @@ Resources:
           ToPort: 65535
           CidrIp: 0.0.0.0/0
           
-  WorlwyDBCredSecrets:
-        Type: 'AWS::SecretsManager::Secret'
-        Properties:
-            Name: worley-db-cred
-            Description: This secret has a API credientials details
-            SecretString: '{"UserName": "admin", "Password": "Demo_DB_Pass"}'
-            Tags:
-                - Key: Secrets
-                  Value: Worley
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: RDSDBSecret
+      Description: "RDS credentials for MyRDSInstance"
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin"}'
+        GenerateStringKey: "password"
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\\'
+
                   
   DBCluster:
     DependsOn: WorlwyDBCredSecrets
@@ -54,8 +53,16 @@ Resources:
       Engine: aurora-postgresql
       EngineVersion: '16.3'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
-      MasterUsername: !Ref DBUsername
-      MasterUserPassword: '{{resolve:secretsmanager:worley-db-cred:SecretString:password}}'
+      MasterUsername: !Join
+          - ''
+          - - '{{resolve:secretsmanager:'
+            - !Ref DBSecret
+            - ':SecretString:username}}' 
+      MasterUserPassword: !Join
+          - ''
+          - - '{{resolve:secretsmanager:'
+            - !Ref DBSecret
+            - ':SecretString:password}}'
       DBSubnetGroupName: !Ref DBSubnetGroup
       VpcSecurityGroupIds:
         - !Ref DBSecurityGroup
