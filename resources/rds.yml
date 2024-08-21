@@ -51,7 +51,7 @@ Resources:
         ExcludeCharacters: '"@/\\'
 
   DBCluster:
-    DependsOn: WorlwyDBCredSecrets
+    DependsOn: DBSecret
     Type: 'AWS::RDS::DBCluster'
     Properties:
       Engine: aurora-PostgreSQL
