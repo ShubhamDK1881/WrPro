@@ -40,7 +40,7 @@ Resources:
       Name: RDSDBSecret
       Description: "RDS credentials for MyRDSInstance"
       GenerateSecretString:
-        SecretStringTemplate: '{"username": "admin"}'
+        SecretStringTemplate: '{"username": "dbadminuser"}'
         GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\\'
