@@ -22,8 +22,7 @@ Parameters:
     Type: String
   DBInstanceType:
     Type: String
-  DBUsername:
-    Type: String
+  
 
 Resources:
 
@@ -49,6 +48,5 @@ Resources:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/rds.yml'
       Parameters:
         InstanceType: !Ref DBInstanceType
-        DBUsername: !Ref DBUsername
         VpcName: !Ref VpcName
 
