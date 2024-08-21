@@ -44,10 +44,9 @@ Resources:
             Description: This secret has a API credientials details
             SecretString: '{"AccountNumber" : "", "UserName": "", "Password": ""}'
             Tags:
-                -
-                    Key: Secrets
-                    Value: Worley
-
+                - Key: Secrets
+                  Value: Worley
+                  
   DBCluster:
     DependsOn: WorlwyDBCredSecrets
     Type: 'AWS::RDS::DBCluster'
