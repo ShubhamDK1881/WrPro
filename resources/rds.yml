@@ -33,7 +33,7 @@ Resources:
           FromPort: 0
           ToPort: 65535
           CidrIp: 0.0.0.0/0
-          
+                     
   DBSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -45,13 +45,11 @@ Resources:
         PasswordLength: 16
         ExcludeCharacters: '"@/\\'
 
-                  
   DBCluster:
-    DependsOn: WorlwyDBCredSecrets
     Type: 'AWS::RDS::DBCluster'
     Properties:
       Engine: aurora-postgresql
-      EngineVersion: '16.3'
+      EngineVersion: 'PostgreSQL 16.3-R2'
       DBClusterIdentifier: worley-nerve-center-AuroraCluster
       MasterUsername: !Join
           - ''
@@ -70,6 +68,7 @@ Resources:
       PreferredBackupWindow: "04:00-05:00"
       PreferredMaintenanceWindow: "mon:05:00-mon:06:00"
       StorageEncrypted: true
+      DeletionPolicy: Snapshot
       DatabaseName: worley-nerve-center-Database
 
   DBInstance:
