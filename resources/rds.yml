@@ -6,9 +6,6 @@ Parameters:
     Type: String
   InstanceType:
     Type: String
-  DBUsername:
-    Type: String
-    NoEcho: true
 
 Resources:
   DBSubnetGroup:
@@ -51,7 +48,6 @@ Resources:
         ExcludeCharacters: '"@/\\'
 
   DBCluster:
-    DependsOn: DBSecret
     Type: 'AWS::RDS::DBCluster'
     Properties:
       Engine: aurora-PostgreSQL
