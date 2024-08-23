@@ -77,6 +77,5 @@ Resources:
   NestedflowlogsStack:
     Type: AWS::EC2::FlowLog
     Properties:
-      VPCFlowLogName: !Ref VPCFlowLogName
       S3BucketName: !Ref S3BucketName
       
