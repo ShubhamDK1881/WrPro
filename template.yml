@@ -1,8 +1,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation Template to Create CloudTrail with S3 Data Events
 
+Parameters:
+  TrailName:
+    Type: String
+  S3BucketCT:
+    Type: String
+    
 Resources:
-  S3BucketForCloudTrailLogs:
+  S3BucketCT:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref S3BucketCT
@@ -36,8 +42,8 @@ Resources:
                   - 's3:PutObject'
                   - 's3:GetBucketAcl'
                 Resource:
-                  - !Sub "arn:aws:s3:::${S3BucketForCloudTrailLogs}/*"
-                  - !Sub "arn:aws:s3:::${S3BucketForCloudTrailLogs}"
+                  - !Sub "arn:aws:s3:::${S3BucketCT}/*"
+                  - !Sub "arn:aws:s3:::${S3BucketCT}"
               - Effect: Allow
                 Action:
                   - 'logs:CreateLogStream'
@@ -48,7 +54,7 @@ Resources:
     Type: 'AWS::CloudTrail::Trail'
     Properties:
       TrailName: !Ref TrailName
-      S3BucketName: !Ref S3BucketForCloudTrailLogs
+      S3BucketName: !Ref S3BucketCT
       CloudWatchLogsLogGroupArn: !GetAtt CloudTrailLogGroup.Arn
       CloudWatchLogsRoleArn: !GetAtt CloudTrailRole.Arn
       IncludeGlobalServiceEvents: true
@@ -70,7 +76,7 @@ Outputs:
 
   CloudTrailBucket:
     Description: "S3 Bucket for CloudTrail logs"
-    Value: !Ref S3BucketForCloudTrailLogs
+    Value: !Ref S3BucketCT
 
   CloudTrailLogGroup:
     Description: "CloudWatch Log Group for CloudTrail logs"
