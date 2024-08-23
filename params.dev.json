@@ -1,5 +1,5 @@
 [
-  {"ParameterKey": "S3BucketName", "ParameterValue": "my-demo-nw"},
+  {"ParameterKey": "S3BucketCT", "ParameterValue": "worley-nc-cloudtrail-demo"},
   {"ParameterKey": "TrailName", "ParameterValue": "MyCloudTrail"},
   {"ParameterKey": "S3KeyPrefix", "ParameterValue": "cloudtrail/"},
 ]
