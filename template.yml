@@ -28,7 +28,7 @@ Resources:
    NestedVPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: 'https://s3.amazonaws.com/worley-nc-deployment/vpc.yml'
+      TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/vpc.yml'
       Parameters:
         VpcCIDR: !Ref VpcCIDR
         VpcName: !Ref VpcName
@@ -43,5 +43,6 @@ Resources:
   NestedflowlogsStack:
     Type: AWS::EC2::FlowLog
     Properties:
+      TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/flowlogs.yml'
       S3BucketName: !Ref S3BucketName
       
