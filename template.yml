@@ -22,8 +22,6 @@ Parameters:
     Type: String
   S3BucketName:
     Type: String
-  VPCFlowLogName:
-    Type: String
 
 Resources:
 
