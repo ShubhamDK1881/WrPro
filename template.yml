@@ -40,9 +40,10 @@ Resources:
         AvailabilityZone2 : !Ref AvailabilityZone2
         InternetGatewayIG: !Ref InternetGatewayIG
 
-  NestedflowlogsStack:
-    Type: AWS::EC2::FlowLog
+  NestedFlowLogsStack:
+    Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: 'https://s3.amazonaws.com/my-demo-nw/flowlogs.yml'
-      S3BucketName: !Ref S3BucketName
-      
+      Properties:
+        S3BucketName: !Ref S3BucketName
+        
