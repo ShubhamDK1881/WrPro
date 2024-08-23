@@ -12,9 +12,21 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref S3BucketCT
-      AccessControl: Private
-      VersioningConfiguration:
-        Status: Enabled
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudTrail
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: 's3:PutObject'
+            Resource: !Sub "arn:aws:s3:::${S3BucketForCloudTrailLogs}/*"
+          - Sid: AllowGetBucketAcl
+            Effect: Allow
+            Principal:
+              Service: cloudtrail.amazonaws.com
+            Action: 's3:GetBucketAcl'
+            Resource: !Sub "arn:aws:s3:::${S3BucketForCloudTrailLogs}"
 
   CloudTrailLogGroup:
     Type: 'AWS::Logs::LogGroup'
