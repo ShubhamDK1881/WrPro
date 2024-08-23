@@ -4,7 +4,7 @@ Description: CloudTrail setup with specific configurations for failed account lo
 Parameters:
   TrailName:
     Type: String
-  S3BucketName:
+  S3BucketCT:
     Type: String
   S3KeyPrefix:
     Type: String
@@ -13,7 +13,7 @@ Resources:
   CloudTrailLogsBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Ref S3BucketName
+      BucketName: !Ref S3BucketCT
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -46,7 +46,7 @@ Resources:
     Type: 'AWS::CloudTrail::Trail'
     Properties:
       TrailName: !Ref TrailName
-      S3BucketName: !Ref CloudTrailLogsBucket
+      S3BucketCT: !Ref CloudTrailLogsBucket
       S3KeyPrefix: !Ref S3KeyPrefix
       IsMultiRegionTrail: true
       EnableLogFileValidation: true
@@ -57,7 +57,7 @@ Resources:
           IncludeManagementEvents: true
           DataResources:
             - Type: AWS::S3::Object
-              Values: !Sub arn:aws:s3:::${S3BucketName}/
+              Values: !Sub arn:aws:s3:::${S3BucketCT}/
             - Type: AWS::Lambda::Function
               Values: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*
 
@@ -65,7 +65,7 @@ Resources:
     Type: 'AWS::CloudTrail::Trail'
     Properties:
       TrailName: !Sub "${TrailName}-LocalAutomation"
-      S3BucketName: !Ref CloudTrailLogsBucket
+      S3BucketCT: !Ref CloudTrailLogsBucket
       S3KeyPrefix: !Sub "${S3KeyPrefix}local-automation/"
       IsMultiRegionTrail: false
       EnableLogFileValidation: true
@@ -82,7 +82,7 @@ Resources:
     Type: 'AWS::CloudTrail::Trail'
     Properties:
       TrailName: !Sub "${TrailName}-FailedAccountLogs"
-      S3BucketName: !Ref CloudTrailLogsBucket
+      S3BucketCT: !Ref CloudTrailLogsBucket
       S3KeyPrefix: !Sub "${S3KeyPrefix}failed-account-logs/"
       IsMultiRegionTrail: true
       EnableLogFileValidation: true
@@ -116,7 +116,7 @@ Outputs:
   TrailName:
     Description: The name of the CloudTrail
     Value: !Ref TrailName
-  S3BucketName:
+  S3BucketCT:
     Description: The name of the S3 bucket storing CloudTrail logs
     Value: !Ref CloudTrailLogsBucket
   CloudWatchLogGroupArn:
