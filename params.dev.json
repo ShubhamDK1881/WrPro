@@ -7,5 +7,6 @@
   {"ParameterKey": "InternetGatewayIG", "ParameterValue": "worley-nc-IG-dev"},
   {"ParameterKey": "AvailabilityZone1", "ParameterValue": "ap-south-1a"},
   {"ParameterKey": "AvailabilityZone2", "ParameterValue": "ap-south-1b"},
-  {"ParameterKey": "VpcName", "ParameterValue": "worley-nc-VPC"}
+  {"ParameterKey": "VpcName", "ParameterValue": "worley-nc-VPC"},
+  {"ParameterKey": "S3BucketName", "ParameterValue":"worley-nc-deployment"}
 ]
