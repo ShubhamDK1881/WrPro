@@ -73,17 +73,6 @@ jobs:
           echo "Deployment Stack Name : ${{ env.STACK_NAME }}"
     #      echo "Deployment Environment: ${{ env.DEPLOYMENT_ENV }}"
 
-    - name: Upload nested stack templates to S3
-      run: |
-        aws s3 cp ./resources/s3.yml s3://${{ secrets.S3_BUCKET }}
-
-
-    - name: Prepare Parameter Overrides
-      id: prepare_params
-      run: |
-        params=$(cat ./params.${{ env.DEPLOYMENT_ENV }}.json | jq -r 'to_entries | map("\(.key)=\(.value|tostring)") | join(" ")')
-        echo "params=$params" >> $GITHUB_ENV
-
     - name: Install cfn-lint
       run: pip install cfn-lint
  
