@@ -92,7 +92,7 @@ jobs:
 
         
     - name: Deploy to AWS Cloudformation
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      uses: aws-actions/aws-cloudformation-github-deploy@v2
       with:
         name: ${{ env.STACK_NAME }}
         template:  ./template.yml
